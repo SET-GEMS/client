@@ -1,2 +1,2 @@
 # client
-SETGEMS client side
+SET GEMS Client Side
