@@ -16,6 +16,10 @@ button {
   margin: 2px;
 }
 
+label {
+  margin: 0 5px;
+}
+
 .App {
   text-align: center;
 }
@@ -44,4 +48,11 @@ button {
 
 .example .card {
   margin: 10px 5px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
 }
