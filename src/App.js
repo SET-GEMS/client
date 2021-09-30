@@ -1,10 +1,24 @@
-import React from "react";
-import "./App.css";
+import React, { useState } from "react";
+
+import Welcome from "./pages/Welcome";
+import Single from "./pages/Single";
+import Multi from "./pages/Multi";
+import { SINGLE, MULTI } from "./constants/mode";
 
 function App() {
+  const [mode, setMode] = useState("");
+
+  const handleHomeButtonClick = function() {
+    setMode("");
+  };
+
   return (
     <div className="App">
-      set gems
+      {!mode && <Welcome onSelectMode={setMode} />}
+      {mode === SINGLE
+        && <Single onHomeButtonClick={handleHomeButtonClick} />}
+      {mode === MULTI
+        && <Multi onHomeButtonClick={handleHomeButtonClick} />}
     </div>
   );
 }
