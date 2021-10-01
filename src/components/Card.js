@@ -1,16 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { getBackgroundImageUrl, getGemImageUrl } from "../helper/image";
+import { getBackgroundImageUri, getGemImageUri } from "../helper/image";
 import { GEM_COLOR, GEM_SHAPE, METAL_COLOR, METAL_SHAPE } from "../constants/cardProperty";
 
 function Card({ gemColor, gemShape, metalColor, metalShape }) {
-  const backgroundImageUrl = getBackgroundImageUrl(metalColor, metalShape);
-  const gemImageUrl = getGemImageUrl(gemColor, gemShape);
+  const backgroundImageUri = getBackgroundImageUri(metalColor, metalShape);
+  const gemImageUri = getGemImageUri(gemColor, gemShape);
 
   return (
-    <div className="card" style={{ backgroundImage: `url(${backgroundImageUrl})` }}>
-      <img src={gemImageUrl} />
+    <div className="card" style={{ backgroundImage: `url(${backgroundImageUri})` }}>
+      <img src={gemImageUri} />
     </div>
   );
 }
