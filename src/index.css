@@ -1,3 +1,8 @@
+:root {
+  --card-width: 167px;
+  --card-height: 223px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -29,8 +34,8 @@ label {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 167px;
-  height: 223px;
+  width: var(--card-width);
+  height: var(--card-height);
   border: 1px solid black;
   border-radius: 5px;
 }
@@ -55,4 +60,10 @@ label {
   justify-content: space-between;
   align-items: flex-start;
   padding: 20px;
+}
+
+.card-area {
+  display: grid;
+  grid-template-columns: repeat(4, calc(var(--card-width)));
+  gap: 10px;
 }

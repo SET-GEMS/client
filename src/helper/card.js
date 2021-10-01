@@ -17,4 +17,17 @@ function getAllCardInfo() {
   return allCardInfo;
 }
 
-export default getAllCardInfo;
+function shuffleCards(cards) {
+  const shuffledCards = [...cards];
+
+  cards.forEach((_, i) => {
+    const randomIndex = Math.floor(Math.random() * cards.length);
+    const temp = shuffledCards[i];
+    shuffledCards[i] = shuffledCards[randomIndex];
+    shuffledCards[randomIndex] = temp;
+  });
+
+  return shuffledCards;
+}
+
+export { getAllCardInfo, shuffleCards };
