@@ -1,11 +1,11 @@
-function getBackgroundImageUrl(color, shape) {
+function getBackgroundImageUri(color, shape) {
   const baseUrl = "/image/backgrounds/";
   return baseUrl + color + "-" + shape + ".png";
 }
 
-function getGemImageUrl(color, shape) {
+function getGemImageUri(color, shape) {
   const baseUrl = "/image/gems/";
   return baseUrl + color + "-" + shape + ".png";
 }
 
-export { getBackgroundImageUrl, getGemImageUrl };
+export { getBackgroundImageUri, getGemImageUri };

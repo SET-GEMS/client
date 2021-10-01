@@ -67,3 +67,8 @@ label {
   grid-template-columns: repeat(4, calc(var(--card-width)));
   gap: 10px;
 }
+
+.ranking {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
