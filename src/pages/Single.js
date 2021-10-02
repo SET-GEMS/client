@@ -7,6 +7,21 @@ import { WAITING, PLAYING, ENDED } from "../constants/playState";
 
 function Single({ onHomeButtonClick }) {
   const [state, setState] = useState(WAITING);
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
+    if (state !== PLAYING) {
+      return;
+    }
+
+    setTime(0);
+
+    const timer = setInterval(() => {
+      setTime((time) => time + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [state]);
 
   const handleStartButtonClick = function () {
     if (state === WAITING) {
@@ -30,6 +45,7 @@ function Single({ onHomeButtonClick }) {
           {state === PLAYING && <CardArea />}
         </div>
         <div className="sub">
+          {state === PLAYING && <p>{`${time}초`}</p>}
         </div>
         <div className="button">
           <button type="button" onClick={handleStartButtonClick}>
