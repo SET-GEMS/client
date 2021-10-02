@@ -25,7 +25,7 @@ function Card({
     <div
       onClick={onClick}
       className={isNew ? "new card" : "card"}
-      style={ { backgroundImage: `url(${backgroundImageUri})` } }
+      style={{ backgroundImage: `url(${backgroundImageUri})` }}
     ><img src={gemImageUri} /></div>
   );
 }

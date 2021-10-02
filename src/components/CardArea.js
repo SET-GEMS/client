@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 import { getAllCardInfo, shuffleCards, validateSet } from "../helper/card";
 import Card from "../components/Card";
 
-function CardArea({ onSuccess, onFailure, onGameCompleted }) {
-  const hintTime = 5000;
+function CardArea({ onSuccess, onGameCompleted }) {
+  const hintTime = 60000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
   const [hasNewCards, setHasNewCards] = useState(false);
@@ -171,7 +171,6 @@ function CardArea({ onSuccess, onFailure, onGameCompleted }) {
 
 CardArea.propTypes = {
   onSuccess: PropTypes.func,
-  onFailure: PropTypes.func,
   onGameCompleted: PropTypes.func,
 };
 

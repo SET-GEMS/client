@@ -3,13 +3,15 @@ import PropTypes from "prop-types";
 
 import CardArea from "../components/CardArea";
 import Ranking from "../components/Ranking";
+import SingleResult from "../components/SingleResult";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 
 function Single({ onHomeButtonClick }) {
   const numberOfAllCards = 81;
-  const [state, setState] = useState(WAITING);
+  const [state, setState] = useState(ENDED);
   const [time, setTime] = useState(0);
   const [restCardCount, setRestCardCount] = useState(numberOfAllCards);
+  const [rankerStandard, setRankerStandard] = useState(Infinity);
 
   useEffect(() => {
     if (state !== PLAYING) {
@@ -41,6 +43,10 @@ function Single({ onHomeButtonClick }) {
     setState(ENDED);
   };
 
+  const handleRankingFormSubmit = function () {
+    setState(WAITING);
+  };
+
   return (
     <div>
       <div className="header">
@@ -51,11 +57,17 @@ function Single({ onHomeButtonClick }) {
       </div>
       <div className="play">
         <div className="main">
-          {state === WAITING && <Ranking />}
+          {state === WAITING
+            && <Ranking setRankerStandard={setRankerStandard} />}
           {state === PLAYING
             && <CardArea
             onSuccess={handleSuccess}
             onGameCompleted={handleGameCompleted} />}
+          {state === ENDED
+            && <SingleResult
+              time={time}
+              rankerStandard={rankerStandard}
+              onSubmit={handleRankingFormSubmit} />}
         </div>
         <div className="sub">
           {state === PLAYING
