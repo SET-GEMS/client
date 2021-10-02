@@ -8,7 +8,7 @@ import { WAITING, PLAYING, ENDED } from "../constants/playState";
 
 function Single({ onHomeButtonClick }) {
   const numberOfAllCards = 81;
-  const [state, setState] = useState(ENDED);
+  const [state, setState] = useState(WAITING);
   const [time, setTime] = useState(0);
   const [restCardCount, setRestCardCount] = useState(numberOfAllCards);
   const [rankerStandard, setRankerStandard] = useState(Infinity);

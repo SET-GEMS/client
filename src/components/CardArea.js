@@ -13,6 +13,7 @@ function CardArea({ onSuccess, onGameCompleted }) {
   const [remainingCards, setRemainingCards] = useState([]);
   const [openedCards, setOpenedCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
+  const [hintTimer, setHintTimer] = useState(null);
 
   useEffect(() => {
     const initialCards = shuffleCards(getAllCardInfo());
@@ -62,11 +63,15 @@ function CardArea({ onSuccess, onGameCompleted }) {
     const cardElements = cardAreaRef.current.children;
     const setElements = correctSet.map((cardIndex) => cardElements[cardIndex]);
 
-    setTimeout(() => {
+    const newHintTimer = setTimeout(() => {
       setElements.forEach((card) => {
         card.classList.add("hint");
       });
     }, hintTime);
+
+    setHintTimer(newHintTimer);
+
+    return () => clearTimeout(hintTimer);
   }, [hasNewCards]);
 
   useEffect(() => {

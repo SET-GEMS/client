@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 import { postRanking } from "../api/ranking";
 
 function SingleResult({ time, rankerStandard, onSubmit }) {
   const isRanker = time < rankerStandard;
+  const [error, setError] = useState("");
   let isSubmitted = false;
 
   const handleFormSubmit = async function(ev) {
@@ -16,7 +17,12 @@ function SingleResult({ time, rankerStandard, onSubmit }) {
 
     isSubmitted = true;
     const data = { time, name: ev.target.nickname.value };
-    await postRanking(data);
+
+    try {
+      await postRanking(data);
+    } catch(err) {
+      setError("랭킹등록에 실패하였습니다");
+    }
 
     onSubmit();
   };
@@ -24,6 +30,7 @@ function SingleResult({ time, rankerStandard, onSubmit }) {
   return (
     <div className="result">
       <h2>{`완료 시간: ${time}초`}</h2>
+      {error && <p>{error}</p>}
       {isRanker && <form onSubmit={handleFormSubmit}>
         <div className="guide">
           <p>당신은 상위 20인에 들었습니다.</p>
