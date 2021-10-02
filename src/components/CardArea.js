@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-import { getAllCardInfo, shuffleCards, validateSet } from "../helper/card";
+import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../helper/card";
 import Card from "../components/Card";
 
 function CardArea({ onSuccess, onGameCompleted }) {
@@ -31,33 +31,10 @@ function CardArea({ onSuccess, onGameCompleted }) {
 
     setHasNewCards(false);
 
-    const correctSet = [];
-
-    for (let i = 0; i < openedCards.length - 2; i++) {
-      if(correctSet.length) {
-        break;
-      }
-
-      for (let j = i + 1; j < openedCards.length - 1; j++) {
-        if(correctSet.length) {
-          break;
-        }
-
-        for (let k = j + 1; k < openedCards.length; k++) {
-          const set = [openedCards[i], openedCards[j], openedCards[k]];
-          const hasCorrectSet = validateSet(set);
-
-          if (hasCorrectSet) {
-            correctSet.push(i, j, k);
-            break;
-          }
-        }
-      }
-    }
+    const correctSet = findValidSet(openedCards);
 
     if (!correctSet.length) {
-      setIsRequiredShuffle(true);
-      return;
+      return setIsRequiredShuffle(true);
     }
 
     const cardElements = cardAreaRef.current.children;
@@ -79,8 +56,10 @@ function CardArea({ onSuccess, onGameCompleted }) {
       return;
     }
 
+    setIsRequiredShuffle(false);
+
     if (!remainingCards.length) {
-      onGameCompleted();
+      return onGameCompleted();
     }
 
     const newRemainingCards = shuffleCards(
@@ -93,26 +72,31 @@ function CardArea({ onSuccess, onGameCompleted }) {
     setRemainingCards(newRemainingCards);
     setOpenedCards(newOpenedCards);
     setHasNewCards(true);
-    setIsRequiredShuffle(false);
   }, [isRequiredShuffle]);
 
   useEffect(() => {
-    if(selectedCards.length !== 3) {
+    if (selectedCards.length !== 3) {
       return;
     }
+
+    setSelectedCards([]);
+
+    const cardElements = cardAreaRef.current.children;
+
+    [...cardElements].forEach((card) => {
+      card.classList.remove("selected");
+      card.classList.remove("hint");
+    });
 
     const selectedSet = selectedCards
       .map((cardIndex) => openedCards[cardIndex]);
 
-    setSelectedCards([]);
-
     if (!validateSet(selectedSet)) {
-      const cardElements = cardAreaRef.current.children;
-
       selectedCards.forEach(cardIndex => {
         const animationTime = 300;
 
         cardElements[cardIndex].classList.add("wrong");
+
         setTimeout(() => {
           cardElements[cardIndex].classList.remove("wrong");
         }, [animationTime]);
@@ -147,17 +131,6 @@ function CardArea({ onSuccess, onGameCompleted }) {
     if (selectedCards.includes(i)) {
       setSelectedCards((cards) => cards.filter((cardIndex) => cardIndex !== i));
       return;
-    }
-
-    if (selectedCards.length === 2) {
-      const openedCardElements = currentTarget.parentElement.children;
-
-      [...openedCardElements].forEach((card) => {
-        card.classList.remove("selected");
-        card.classList.remove("hint");
-      });
-
-      currentTarget.classList.remove("selected");
     }
 
     setSelectedCards((cards) => [ ...cards, i]);
