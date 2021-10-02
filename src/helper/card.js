@@ -30,4 +30,20 @@ function shuffleCards(cards) {
   return shuffledCards;
 }
 
-export { getAllCardInfo, shuffleCards };
+function validateSet(set) {
+  const wrongPropertyCount = 2;
+  const properties = [...Array(4)].map(() => new Set());
+
+  set.forEach((card) => {
+    Object.values(card).forEach((property, i) => {
+      properties[i].add(property);
+    });
+  });
+
+  const isCorrectSet = !properties
+    .some((property) => property.size === wrongPropertyCount);
+
+  return isCorrectSet;
+}
+
+export { getAllCardInfo, shuffleCards, validateSet };

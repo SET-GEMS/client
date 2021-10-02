@@ -6,8 +6,10 @@ import Ranking from "../components/Ranking";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 
 function Single({ onHomeButtonClick }) {
+  const numberOfAllCards = 81;
   const [state, setState] = useState(WAITING);
   const [time, setTime] = useState(0);
+  const [restCardCount, setRestCardCount] = useState(numberOfAllCards);
 
   useEffect(() => {
     if (state !== PLAYING) {
@@ -31,6 +33,14 @@ function Single({ onHomeButtonClick }) {
     }
   };
 
+  const handleSuccess = function (count) {
+    setRestCardCount(count);
+  };
+
+  const handleGameCompleted = function () {
+    setState(ENDED);
+  };
+
   return (
     <div>
       <div className="header">
@@ -42,10 +52,17 @@ function Single({ onHomeButtonClick }) {
       <div className="play">
         <div className="main">
           {state === WAITING && <Ranking />}
-          {state === PLAYING && <CardArea />}
+          {state === PLAYING
+            && <CardArea
+            onSuccess={handleSuccess}
+            onGameCompleted={handleGameCompleted} />}
         </div>
         <div className="sub">
-          {state === PLAYING && <p>{`${time}초`}</p>}
+          {state === PLAYING
+            && <div>
+              <p>{`${time}초`}</p>
+              <p>{`남은 카드 수: ${restCardCount}개`}</p>
+            </div>}
         </div>
         <div className="button">
           <button type="button" onClick={handleStartButtonClick}>
