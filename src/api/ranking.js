@@ -1,10 +1,10 @@
 const serverUrl = process.env.REACT_APP_SERVER_URL + "/ranking";
 
-const useMock = true;
+const useMock = false;
 
 async function getRanking() {
   if (!useMock) {
-    const res = await fetch(serverUrl , {
+    const res = await fetch(serverUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -34,4 +34,23 @@ async function getRanking() {
   return data;
 }
 
-export { getRanking };
+async function postRanking(data) {
+  if (!useMock) {
+    const res = await fetch(serverUrl, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw Error(res.statusText);
+    }
+  }
+
+  return true;
+}
+
+export { getRanking, postRanking };

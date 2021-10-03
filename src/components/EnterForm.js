@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 function EnterForm({ onSubmit }) {
@@ -14,7 +14,6 @@ function EnterForm({ onSubmit }) {
 
   return (
     <form onSubmit={handleFormSubmit}>
-      <p></p>
       <div>
         <label htmlFor="roomName">방 제목</label>
         <input name="roomName" type="text" required/>
