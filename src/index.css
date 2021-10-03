@@ -209,3 +209,27 @@ label {
   width: 100%;
   transform: translateY(-50%);
 }
+
+.player {
+  position: relative;
+  width: 80%;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 10px auto;
+  padding-bottom: 10px;
+  border: 1px solid black;
+}
+
+.player p {
+  width: 100%;
+  line-height: 5px;
+}
+
+.player video {
+  width: 100px;
+  height: 75px;
+  background-color: black;
+}
