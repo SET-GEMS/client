@@ -16,7 +16,7 @@ async function getCameras() {
       $camerasSelect.appendChild($option);
     });
   } catch(err) {
-    console.log(err);
+    throw err;
   }
 }
 
@@ -42,6 +42,6 @@ async function getMedia(deviceId) {
       await getCameras();
     }
   } catch(err) {
-    console.log(err);
+    throw err;
   }
 }

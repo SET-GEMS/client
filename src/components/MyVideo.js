@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-function Video ({ stream, isMuted, isVideoOff, isMine }) {
+function MyVideo ({ stream, isMuted, isVideoOff }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -35,14 +35,14 @@ function Video ({ stream, isMuted, isVideoOff, isMine }) {
       .forEach((track) => track.enabled = !isVideoOff);
   }, [isVideoOff]);
 
-  return <video ref={videoRef} autoPlay playsInline muted={isMine} />;
+  return <video ref={videoRef} autoPlay playsInline muted={true} />;
 }
 
-Video.propTypes = {
+MyVideo.propTypes = {
   stream: PropTypes.object,
   isMuted: PropTypes.bool,
   isVideoOff: PropTypes.bool,
   isMine: PropTypes.bool,
 };
 
-export default Video;
+export default MyVideo;

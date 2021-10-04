@@ -1,46 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-import Video from "./Video";
-
-function Player({ nickname, stream, count, muted, videoOff, isMine }) {
-  const [isMuted, setIsMuted] = useState(muted);
-  const [isVideoOff, setIsVideoOff] = useState(videoOff);
+function Player({ player }) {
+  const { nickname, peer, point, isReady } = player;
+  const videoRef = useRef();
 
   useEffect(() => {
-    setIsMuted(muted);
-  }, [muted]);
+    peer.on("stream", (stream) => {
+      videoRef.current.srcObject = stream;
+    });
 
-  useEffect(() => {
-    setIsVideoOff(videoOff);
-  }, [videoOff]);
-
-  const handleClick = function () {
-    setIsSetting(true);
-  };
+    return () => {
+      videoRef.current = null;
+    };
+  }, []);
 
   return (
-    <div className="player" onClick={handleClick}>
+    <div className={isReady ? "ready player" : "player"}>
       <p>{nickname}</p>
-      <Video
-        stream={stream}
-        isMuted={isMuted}
-        isVideoOff={isVideoOff}
-        isMine={isMine} />
+      <video ref={videoRef} autoPlay playsInline />
       <div>
-        {count}
+        {point || 0}
       </div>
     </div>
   );
 };
 
 Player.propTypes = {
-  nickname: PropTypes.string,
-  stream: PropTypes.object,
-  count: PropTypes.number,
-  muted: PropTypes.bool,
-  videoOff: PropTypes.bool,
-  isMine: PropTypes.bool,
+  player: PropTypes.shape({
+    id: PropTypes.string,
+    nickname: PropTypes.string,
+    peer: PropTypes.object,
+    point: PropTypes.number,
+    isReady: PropTypes.bool,
+  }),
 };
 
 export default Player;
