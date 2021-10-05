@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import Peer from "simple-peer";
 
 import Player from "./Player";
 import MyVideo from "./MyVideo";
@@ -18,7 +17,6 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const [isVideoOff, setIsVideoOff] = useState(streamSetting.isVideoOff);
   const [isLeader, setIsLeader] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const playersRef = useRef([]);
   const [players, setPlayers] = useState([]);
   const [waitingPlayers, setWaitingPlayers] = useState([]);
   const [myPoint, setMyPoint] = useState(0);
@@ -37,7 +35,6 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
           return createPlayer(socket, myStream, player);
         });
 
-        playersRef.current.push(...players);
         setPlayers(players);
         setWaitingPlayers(waitingPlayers);
       } else {
@@ -46,14 +43,13 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     });
 
     socket.on("new_player", (player) => {
-      const newPlayer = createPeer(socket, myStream, player, false);
+      const newPlayer = createPlayer(socket, myStream, player, false);
 
-      playersRef.current.push(newPlayer);
       setPlayers((prev) => [...prev, newPlayer]);
     });
 
     socket.on("signal", (data, playerId) => {
-      const player = playersRef.current.find(({ id }) => id === playerId);
+      const player = players.find(({ id }) => id === playerId);
 
       if (player) {
         player.peer.signal(data);
@@ -75,17 +71,24 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     });
 
     socket.on("player_left", (playerId) => {
-      const leftPlayer = playersRef.current.find(({ id }) => id !== playerId);
-      const players = playersRef.current.filter(({ id }) => id !== playerId);
+      const leftPlayer = players.find(({ id }) => id !== playerId);
 
       if (leftPlayer) {
         leftPlayer.peer.destroy();
       }
 
-      playersRef.current = players;
       setPlayers((prev) => prev.filter(({ id }) => id !== playerId));
     });
-  }, []);
+
+    return () => {
+      socket.removeAllListeners("joined");
+      socket.removeAllListeners("new_player");
+      socket.removeAllListeners("signal");
+      socket.removeAllListeners("ready");
+      socket.removeAllListeners("start");
+      socket.removeAllListeners("player_left");
+    };
+  }, [players]);
 
   const startGame = function () {
     setState(PLAYING);
