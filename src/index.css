@@ -182,6 +182,15 @@ label {
   padding: 20px 0;
 }
 
+.main .protector {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+}
+
 .sub {
   align-self: end;
   grid-area: sub;
@@ -236,6 +245,10 @@ label {
 
 .player.ready {
   background-color: green;
+}
+
+.player.setter {
+  background-color: goldenrod;
 }
 
 .player p {

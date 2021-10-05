@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 function Player({ player }) {
-  const { nickname, peer, point, isReady } = player;
+  const { nickname, peer, point, isReady, isSetter } = player;
+  const playerRef = useRef();
   const videoRef = useRef();
 
   useEffect(() => {
@@ -15,8 +16,24 @@ function Player({ player }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isReady) {
+      playerRef.current.classList.add("ready");
+    } else {
+      playerRef.current.classList.remove("ready");
+    }
+  }, [isReady]);
+
+  useEffect(() => {
+    if (isSetter) {
+      playerRef.current.classList.add("setter");
+    } else {
+      playerRef.current.classList.remove("setter");
+    }
+  }, [isSetter]);
+
   return (
-    <div className={isReady ? "ready player" : "player"}>
+    <div className="player" ref={playerRef}>
       <p>{nickname}</p>
       <video ref={videoRef} autoPlay playsInline />
       <div>
@@ -33,6 +50,7 @@ Player.propTypes = {
     peer: PropTypes.object,
     point: PropTypes.number,
     isReady: PropTypes.bool,
+    isSetter: PropTypes.bool,
   }),
 };
 
