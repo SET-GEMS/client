@@ -9,12 +9,13 @@ function MyVideo ({ stream, isMuted, isVideoOff }) {
       return;
     }
 
-    videoRef.current.srcObject = stream;
+    const audioTracks = stream.getAudioTracks();
+    const videoTracks = stream.getVideoTracks();
 
-    stream.getAudioTracks()
-    .forEach((track) => track.enabled = !isMuted);
-    stream.getVideoTracks()
-      .forEach((track) => track.enabled = !isVideoOff);
+    audioTracks.forEach((track) => track.enabled = !isMuted);
+    videoTracks.forEach((track) => track.enabled = !isVideoOff);
+
+    videoRef.current.srcObject = stream;
   }, [stream]);
 
   useEffect(() => {
@@ -22,8 +23,9 @@ function MyVideo ({ stream, isMuted, isVideoOff }) {
       return;
     }
 
-    stream.getAudioTracks()
-      .forEach((track) => track.enabled = !isMuted);
+    const audioTracks = stream.getAudioTracks();
+
+    audioTracks.forEach((track) => track.enabled = !isMuted);
   }, [isMuted]);
 
   useEffect(() => {
@@ -31,11 +33,12 @@ function MyVideo ({ stream, isMuted, isVideoOff }) {
       return;
     }
 
-    stream.getVideoTracks()
-      .forEach((track) => track.enabled = !isVideoOff);
+    const videoTracks = stream.getVideoTracks();
+
+    videoTracks.forEach((track) => track.enabled = !isVideoOff);
   }, [isVideoOff]);
 
-  return <video ref={videoRef} autoPlay playsInline muted={true} />;
+  return <video ref={videoRef} autoPlay playsInline muted="true" />;
 }
 
 MyVideo.propTypes = {

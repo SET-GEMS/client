@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Peer from "simple-peer";
 
-import CardArea from "./CardArea";
 import Player from "./Player";
 import MyVideo from "./MyVideo";
 import Chat from "./Chat";
 import createPlayer from "../helper/player";
+import MultiCardArea from "./MultiCardArea";
 import { getCameras, getStream } from "../helper/video";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
-import MultiCardArea from "./MultiCardArea";
 
 function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const [state, setState] = useState(WAITING);
@@ -136,11 +135,11 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
 
   const waitingButton = isLeader ? startButton : readyButton;
 
-  const playerElements = players.length ? players.map((player) => {
+  const playerElements = players.map((player) => {
     player.isReady = waitingPlayers.includes(player.id);
 
     return <Player key={player.id} player={player} />;
-  }) : [];
+  });
 
   const handleSuccess = function () {
     setMyPoint(prev => prev + 3);
@@ -149,19 +148,6 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const handleGameCompleted = function () {
     setState(ENDED);
   };
-
-  const cardArea = isLeader
-    ? (<CardArea
-      onSuccess={handleSuccess}
-      onGameCompleted={handleGameCompleted}
-      roomName={roomName}
-      socket={socket}
-    />) : (<MultiCardArea
-      onSuccess={handleSuccess}
-      onGameCompleted={handleGameCompleted}
-      roomName={roomName}
-      socket={socket}
-    />);
 
   return (
     <div>
@@ -225,16 +211,3 @@ MultiRoom.propTypes = {
 };
 
 export default MultiRoom;
-
-function createPeer(socket, stream, player, isInitiator = true) {
-  const peer = new Peer({
-    initiator: isInitiator,
-    stream: stream,
-  });
-
-  peer.on("signal", (data) => {
-    socket.emit("signal", data, player.id);
-  });
-
-  return { ...player, peer };
-}

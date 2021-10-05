@@ -35,9 +35,9 @@ function Chat({ roomName, socket }) {
     ev.target.message.value = "";
   };
 
-  const messageElements = messages.length ? messages.map((message, i) => {
+  const messageElements = messages.map((message, i) => {
     return <p key={`message${i}`}>{message}</p>;
-  }): [];
+  });
 
   return (
     <div>
