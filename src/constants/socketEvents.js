@@ -14,7 +14,8 @@ export const READY = "ready";
 export const START = "start";
 export const START_SELECT = "start_select";
 export const NEW_SELECTOR = "new_selector";
-export const COUNT_TIME = "count_time";
+export const COUNTDOWN = "countdown";
+export const END_SELECT = "end_select";
 export const PLAYER_LEFT = "player_left";
 export const NEW_LEADER = "new_leader";
 

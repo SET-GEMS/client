@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-function Player({ player }) {
-  const { nickname, peer, point, isReady, isSetter } = player;
+function Player({ player, isReady, isSelector, point }) {
+  const { nickname, peer } = player;
   const playerRef = useRef();
   const videoRef = useRef();
 
@@ -25,12 +25,12 @@ function Player({ player }) {
   }, [isReady]);
 
   useEffect(() => {
-    if (isSetter) {
-      playerRef.current.classList.add("setter");
+    if (isSelector) {
+      playerRef.current.classList.add("selector");
     } else {
-      playerRef.current.classList.remove("setter");
+      playerRef.current.classList.remove("selector");
     }
-  }, [isSetter]);
+  }, [isSelector]);
 
   return (
     <div className="player" ref={playerRef}>
@@ -47,11 +47,13 @@ Player.propTypes = {
   player: PropTypes.shape({
     id: PropTypes.string,
     nickname: PropTypes.string,
-    peer: PropTypes.object,
-    point: PropTypes.number,
-    isReady: PropTypes.bool,
-    isSetter: PropTypes.bool,
+    peer: PropTypes.shape({
+      on: PropTypes.func,
+    }),
   }),
+  isReady: PropTypes.bool,
+  isSelector: PropTypes.bool,
+  point: PropTypes.number,
 };
 
 export default Player;
