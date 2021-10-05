@@ -3,45 +3,76 @@ import PropTypes from "prop-types";
 import io from "socket.io-client";
 
 import EnterForm from "../components/EnterForm";
+import MultiRoom from "../components/MultiRoom";
+import { getStream } from "../helper/video";
 
 function Multi({ onHomeButtonClick }) {
   const [roomName, setRoomName] = useState("");
   const [nickname, setNickname] = useState("");
-  const [isMute, setIsMute] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [socket, setSocket] = useState(null);
-  const [peers, setPeers] = useState(null);
+  const [message, setMessage] = useState("");
+  const [myStream, setMyStream] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:8000");
+    const socket = io("http://localhost:8000", { reconnection: false });
 
-    socket.on("joined", roomMembers => {
-      const peers = {};
+    const handleSocketError = function () {
+      setMessage("현재 같이하기 모드를 사용할 수 없습니다");
 
-      roomMembers.forEach(socketId => {
-        peers[socketId] = socketId; //webRTC
-      });
+      setTimeout(() => {
+        setMessage("");
+        onHomeButtonClick();
+      }, 1000);
+    };
 
-      setPeers(peers);
+    socket.on("connect_error", handleSocketError);
+    socket.on("connect_failed", handleSocketError);
+    socket.on("disconnect", handleSocketError);
+
+    socket.on("full_room", () => {
+      setMessage("정원초과로 들어갈 수 없는 방입니다");
+
+      setTimeout(() => {
+        setMessage("");
+      }, 1000);
     });
 
     setSocket(socket);
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
-  const handleEnterForm = function({ roomName, nickname, isMute, isVideoOff }) {
-    setRoomName(roomName);
-    setNickname(nickname);
-    setIsMute(isMute);
+  const handleEnterForm = function (values) {
+    const { roomName, nickname, isMuted, isVideoOff } = values;
+
+    setIsMuted(isMuted);
     setIsVideoOff(isVideoOff);
 
-    socket.emit("join_room", roomName, nickname);
+    async function enterRoom (nickname) {
+      const myStream = await getStream();
+
+      setMyStream(myStream);
+      setRoomName(roomName);
+      setNickname(nickname);
+      socket.emit("join_room", roomName);
+    }
+
+    socket.emit("knock", roomName, nickname, enterRoom);
   };
 
-  const handleExitRoom = function() {
+  const handleExitRoom = function () {
+    myStream.getTracks().forEach(track => track.stop());
+
     setRoomName("");
     setNickname("");
-    setIsMute(false);
+    setIsMuted(false);
     setIsVideoOff(false);
+    setMyStream(null);
+    socket.emit("exit_room", roomName);
   };
 
   const exitButton = (
@@ -62,7 +93,16 @@ function Multi({ onHomeButtonClick }) {
         <h1>{roomName ? roomName : "같이하기"}</h1>
         {roomName ? exitButton : homeButton}
       </div>
-      {!roomName && <EnterForm onSubmit={handleEnterForm} />}
+      {message && <p>{message}</p>}
+      {!roomName
+        ? <EnterForm onSubmit={handleEnterForm} />
+        : <MultiRoom
+          roomName={roomName}
+          nickname={nickname}
+          stream={myStream}
+          streamSetting={{ isMuted, isVideoOff }}
+          socket={socket}
+        />}
     </div>
   );
 }
