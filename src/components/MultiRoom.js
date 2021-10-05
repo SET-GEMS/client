@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import Player from "./Player";
@@ -15,6 +15,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const [state, setState] = useState(WAITING);
   const [myStream, setMyStream] = useState(stream);
   const [cameraId, setCameraId] = useState("");
+  const [cameras, setCameras] = useState([]);
   const [isMuted, setIsMuted] = useState(streamSetting.isMuted);
   const [isVideoOff, setIsVideoOff] = useState(streamSetting.isVideoOff);
   const [isLeader, setIsLeader] = useState(false);
@@ -23,6 +24,32 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const [waitingPlayers, setWaitingPlayers] = useState([]);
   const [myPoint, setMyPoint] = useState(0);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    async function loadCameras() {
+      try {
+        const cameras = await getCameras();
+        setCameras(cameras);
+      } catch(err) {
+        setTemporaryMessage(err.message, setMessage);
+      }
+    }
+
+    loadCameras();
+
+    return () => {
+      myStream.getTracks().forEach((track) => track.stop());
+    };
+  }, []);
+
+  useEffect(() => {
+    const cameras = myStream.getVideoTracks();
+
+    if (cameras.length) {
+      const currentCamera = myStream.getVideoTracks()[0].getSettings();
+      setCameraId(currentCamera.deviceId);
+    }
+  }, [myStream]);
 
   useEffect(() => {
     socket.on(JOINED, (roomMembers) => {
@@ -98,7 +125,15 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       socket.removeAllListeners(PLAYER_LEFT);
       socket.removeAllListeners(NEW_LEADER);
     };
-  }, [players]);
+  }, [players, myStream]);
+
+  const handleSuccess = function () {
+    setMyPoint(prev => prev + 3);
+  };
+
+  const handleGameCompleted = function () {
+    setState(ENDED);
+  };
 
   const startGame = function () {
     setState(PLAYING);
@@ -127,6 +162,17 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     setIsVideoOff(isVideoOff => !isVideoOff);
   };
 
+  const handleCameraSelect = async function ({ target }) {
+    const newStream = await getStream(false, target.value);
+
+    players.forEach(({ peer }) => {
+      peer.removeStream(peer.streams[0]);
+      peer.addStream(newStream);
+    });
+
+    setMyStream(newStream);
+  };
+
   const isAbleToStart = players.length
     && players.length === waitingPlayers.length;
 
@@ -136,7 +182,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       onClick={handleStartButton}
       disabled={!isAbleToStart}
     >
-      {isAbleToStart ? START : "WAITING"}
+      {isAbleToStart ? "START" : "WAITING"}
     </button>
   );
 
@@ -148,19 +194,20 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
 
   const waitingButton = isLeader ? startButton : readyButton;
 
+  const cameraOptions = cameras.map((camera) => {
+    return (
+      <option
+        key={camera.deviceId}
+        value={camera.deviceId}
+      >{camera.label}</option>
+    );
+  });
+
   const playerElements = players.map((player) => {
     player.isReady = waitingPlayers.includes(player.id);
 
     return <Player key={player.id} player={player} />;
   });
-
-  const handleSuccess = function () {
-    setMyPoint(prev => prev + 3);
-  };
-
-  const handleGameCompleted = function () {
-    setState(ENDED);
-  };
 
   return (
     <div>
@@ -189,6 +236,13 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
               <button onClick={handleVideoButton}>
                 {isVideoOff ? "VIDEO ON" : "VIDEO OFF"}
               </button>
+            </div>
+            <div>
+              <select
+                defaultValue={cameraId}
+                onChange={handleCameraSelect}>
+                {cameraOptions}
+              </select>
             </div>
             <div className={isReady ? "ready player" : "player"}>
               <p>{nickname}</p>
