@@ -4,7 +4,9 @@ import io from "socket.io-client";
 
 import EnterForm from "../components/EnterForm";
 import MultiRoom from "../components/MultiRoom";
+import setTemporaryMessage from "../helper/setTemporaryMessage";
 import { getStream } from "../helper/video";
+import { CONNECT_ERROR, CONNECT_FAILED, DISCONNECT, EXIT_ROOM, FULL_ROOM, JOIN_ROOM, KNOCK } from "../constants/socketEvents";
 
 function Multi({ onHomeButtonClick }) {
   const [roomName, setRoomName] = useState("");
@@ -19,24 +21,19 @@ function Multi({ onHomeButtonClick }) {
     const socket = io("http://localhost:8000", { reconnection: false });
 
     const handleSocketError = function () {
-      setMessage("현재 같이하기 모드를 사용할 수 없습니다");
-
-      setTimeout(() => {
-        setMessage("");
-        onHomeButtonClick();
-      }, 1000);
+      setTemporaryMessage(
+        "현재 같이하기 모드를 사용할 수 없습니다",
+        setMessage,
+        onHomeButtonClick(),
+      );
     };
 
-    socket.on("connect_error", handleSocketError);
-    socket.on("connect_failed", handleSocketError);
-    socket.on("disconnect", handleSocketError);
+    socket.on(CONNECT_ERROR, handleSocketError);
+    socket.on(CONNECT_FAILED, handleSocketError);
+    socket.on(DISCONNECT, handleSocketError);
 
-    socket.on("full_room", () => {
-      setMessage("정원초과로 들어갈 수 없는 방입니다");
-
-      setTimeout(() => {
-        setMessage("");
-      }, 1000);
+    socket.on(FULL_ROOM, () => {
+      setTemporaryMessage("정원초과로 들어갈 수 없는 방입니다", setMessage);
     });
 
     setSocket(socket);
@@ -58,10 +55,10 @@ function Multi({ onHomeButtonClick }) {
       setMyStream(myStream);
       setRoomName(roomName);
       setNickname(nickname);
-      socket.emit("join_room", roomName);
+      socket.emit(JOIN_ROOM, roomName);
     }
 
-    socket.emit("knock", roomName, nickname, enterRoom);
+    socket.emit(KNOCK, roomName, nickname, enterRoom);
   };
 
   const handleExitRoom = function () {
@@ -72,7 +69,7 @@ function Multi({ onHomeButtonClick }) {
     setIsMuted(false);
     setIsVideoOff(false);
     setMyStream(null);
-    socket.emit("exit_room", roomName);
+    socket.emit(EXIT_ROOM, roomName);
   };
 
   const exitButton = (

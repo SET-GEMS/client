@@ -4,10 +4,12 @@ import PropTypes from "prop-types";
 import Player from "./Player";
 import MyVideo from "./MyVideo";
 import Chat from "./Chat";
-import createPlayer from "../helper/player";
 import MultiCardArea from "./MultiCardArea";
+import createPlayer from "../helper/createPlayer";
+import setTemporaryMessage from "../helper/setTemporaryMessage";
 import { getCameras, getStream } from "../helper/video";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
+import { JOINED, NEW_LEADER, NEW_PLAYER, PLAYER_LEFT, READY, SIGNAL, START } from "../constants/socketEvents";
 
 function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const [state, setState] = useState(WAITING);
@@ -23,7 +25,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    socket.on("joined", (roomMembers) => {
+    socket.on(JOINED, (roomMembers) => {
       if (roomMembers.length) {
         const waitingPlayers = [];
 
@@ -42,13 +44,13 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       }
     });
 
-    socket.on("new_player", (player) => {
+    socket.on(NEW_PLAYER, (player) => {
       const newPlayer = createPlayer(socket, myStream, player, false);
 
       setPlayers((prev) => [...prev, newPlayer]);
     });
 
-    socket.on("signal", (data, playerId) => {
+    socket.on(SIGNAL, (data, playerId) => {
       const player = players.find(({ id }) => id === playerId);
 
       if (player) {
@@ -56,7 +58,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       }
     });
 
-    socket.on("ready", (isReady, playerId) => {
+    socket.on(READY, (isReady, playerId) => {
       if (isReady) {
         setWaitingPlayers((prev) => [...prev, playerId]);
       } else {
@@ -64,13 +66,13 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       }
     });
 
-    socket.on("start", () => {
+    socket.on(START, () => {
       setWaitingPlayers([]);
       startGame();
       setIsReady(false);
     });
 
-    socket.on("player_left", (playerId) => {
+    socket.on(PLAYER_LEFT, (playerId) => {
       const leftPlayer = players.find(({ id }) => id !== playerId);
 
       if (leftPlayer) {
@@ -80,13 +82,21 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       setPlayers((prev) => prev.filter(({ id }) => id !== playerId));
     });
 
+    socket.on(NEW_LEADER, (leaderId) => {
+      if (leaderId === socket.id) {
+        setIsLeader(true);
+        setIsReady(false);
+      }
+    });
+
     return () => {
-      socket.removeAllListeners("joined");
-      socket.removeAllListeners("new_player");
-      socket.removeAllListeners("signal");
-      socket.removeAllListeners("ready");
-      socket.removeAllListeners("start");
-      socket.removeAllListeners("player_left");
+      socket.removeAllListeners(JOINED);
+      socket.removeAllListeners(NEW_PLAYER);
+      socket.removeAllListeners(SIGNAL);
+      socket.removeAllListeners(READY);
+      socket.removeAllListeners(START);
+      socket.removeAllListeners(PLAYER_LEFT);
+      socket.removeAllListeners(NEW_LEADER);
     };
   }, [players]);
 
@@ -95,16 +105,16 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   };
 
   const handleStartButton = function () {
-    socket.emit("start", roomName, startGame);
+    socket.emit(START, roomName, startGame);
     setWaitingPlayers([]);
   };
 
   const handleReadyButton = function () {
     if (!isReady) {
-      socket.emit("ready", true, roomName);
+      socket.emit(READY, true, roomName);
       setIsReady(true);
     } else {
-      socket.emit("ready", false, roomName);
+      socket.emit(READY, false, roomName);
       setIsReady(false);
     }
   };
@@ -126,13 +136,13 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
       onClick={handleStartButton}
       disabled={!isAbleToStart}
     >
-      {isAbleToStart ? "START" : "WAITING"}
+      {isAbleToStart ? START : "WAITING"}
     </button>
   );
 
   const readyButton = (
     <button type="button" onClick={handleReadyButton}>
-      {isReady ? "WAITING" : "READY"}
+      {isReady ? "WAITING" : READY}
     </button>
   );
 
