@@ -9,15 +9,18 @@ export const EXIT_ROOM = "exit_room";
 export const JOINED = "joined";
 export const NEW_PLAYER = "new_player";
 export const SIGNAL = "signal";
-export const CHAT = "chat";
-export const READY = "ready";
+export const ALL_READY = "all_ready";
 export const START = "start";
 export const START_SELECT = "start_select";
-export const NEW_SELECTOR = "new_selector";
 export const COUNTDOWN = "countdown";
-export const END_SELECT = "end_select";
 export const PLAYER_LEFT = "player_left";
 export const NEW_LEADER = "new_leader";
+
+export const CHAT = "chat";
+
+export const READY = "ready";
+export const NEW_SELECTOR = "new_selector";
+export const SELECT_SUCCESS = "select_success";
 
 export const SET_CARDS = "set_cards";
 export const SELECT_CARD = "select_card";

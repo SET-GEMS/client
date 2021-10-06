@@ -1,12 +1,18 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-function Player({ player, isReady, isSelector, point }) {
-  const { nickname, peer } = player;
+import usePlayer from "../hooks/usePlayer";
+
+function Player({ socket, peer, player }) {
+  const [point, isReady, isSelector] = usePlayer(socket, player);
   const playerRef = useRef();
   const videoRef = useRef();
 
   useEffect(() => {
+    if (!peer) {
+      return;
+    }
+
     peer.on("stream", (stream) => {
       videoRef.current.srcObject = stream;
     });
@@ -14,7 +20,7 @@ function Player({ player, isReady, isSelector, point }) {
     return () => {
       videoRef.current = null;
     };
-  }, []);
+  }, [peer]);
 
   useEffect(() => {
     if (isReady) {
@@ -34,7 +40,7 @@ function Player({ player, isReady, isSelector, point }) {
 
   return (
     <div className="player" ref={playerRef}>
-      <p>{nickname}</p>
+      <p>{player.nickname}</p>
       <video ref={videoRef} autoPlay playsInline />
       <div>
         {point || 0}
@@ -44,16 +50,22 @@ function Player({ player, isReady, isSelector, point }) {
 };
 
 Player.propTypes = {
+  socket: PropTypes.shape({
+    on: PropTypes.func,
+    emit: PropTypes.func,
+    removeEventListener: PropTypes.func,
+  }),
+  peer: PropTypes.shape({
+    on: PropTypes.func,
+  }),
   player: PropTypes.shape({
     id: PropTypes.string,
     nickname: PropTypes.string,
-    peer: PropTypes.shape({
-      on: PropTypes.func,
-    }),
+    point: PropTypes.number,
+    isReady: PropTypes.bool,
+    isSelector: PropTypes.bool,
+    isLeader: PropTypes.bool,
   }),
-  isReady: PropTypes.bool,
-  isSelector: PropTypes.bool,
-  point: PropTypes.number,
 };
 
 export default Player;

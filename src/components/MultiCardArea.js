@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../helper/card";
 import Card from "./Card";
-import { GAME_OVER, SELECT_CARD, SET_CARDS } from "../constants/socketEvents";
+import { NEW_PLAYER, SELECT_CARD, SET_CARDS } from "../constants/socketEvents";
 
 function MultiCardArea({
   onSuccess,
@@ -12,7 +12,7 @@ function MultiCardArea({
   roomName,
   isLeader,
 }) {
-  const hintTime = 60000;
+  const hintTime = 1000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
   const [hasNewCards, setHasNewCards] = useState(false);
@@ -48,16 +48,17 @@ function MultiCardArea({
       handleCardSelect(cardIndex);
     });
 
-    socket.on(GAME_OVER, () => {
-      onGameCompleted();
+    socket.on(NEW_PLAYER, (player) => {
+      if (isLeader) {
+        socket.emit("let_join", player.id, openedCards, remainingCards);
+      }
     });
 
     return () => {
       socket.removeAllListeners(SET_CARDS);
       socket.removeAllListeners(SELECT_CARD);
-      socket.removeAllListeners(GAME_OVER);
     };
-  }, [handleCardSelect]);
+  }, [isLeader, handleCardSelect]);
 
   useEffect(() => {
     if (!isLeader) {
