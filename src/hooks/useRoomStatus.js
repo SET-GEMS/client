@@ -18,7 +18,13 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
   useEffect(() => {
     return () => {
       setState(WAITING);
-      setPeers([]);
+      setPeers((prev) => {
+        prev.forEach(({ peer }) => {
+          peer.destroy();
+        });
+
+        return [];
+      });
       setPlayers([]);
       setIsAllReady(false);
       setSelectTime(0);

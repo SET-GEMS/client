@@ -8,6 +8,7 @@ export const KNOCK = "knock";
 export const EXIT_ROOM = "exit_room";
 export const JOINED = "joined";
 export const NEW_PLAYER = "new_player";
+export const LET_JOIN = "let_join";
 export const SIGNAL = "signal";
 export const ALL_READY = "all_ready";
 export const START = "start";
