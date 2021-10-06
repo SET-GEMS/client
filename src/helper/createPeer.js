@@ -1,4 +1,5 @@
 import Peer from "simple-peer";
+import { SIGNAL } from "../constants/socketEvents";
 
 function createPeer(socket, stream, id, isInitiator = true) {
   const peer = new Peer({
@@ -7,7 +8,7 @@ function createPeer(socket, stream, id, isInitiator = true) {
   });
 
   peer.on("signal", (data) => {
-    socket.emit("signal", data, id);
+    socket.emit(SIGNAL, data, id);
   });
 
   return peer;

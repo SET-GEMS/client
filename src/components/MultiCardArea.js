@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../helper/card";
 import Card from "./Card";
-import { NEW_PLAYER, SELECT_CARD, SET_CARDS } from "../constants/socketEvents";
+import { NEW_PLAYER, SELECT_CARD, SET_CARDS, LET_JOIN } from "../constants/socketEvents";
 
 function MultiCardArea({
   onSuccess,
@@ -12,7 +12,7 @@ function MultiCardArea({
   roomName,
   isLeader,
 }) {
-  const hintTime = 1000;
+  const hintTime = 30000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
   const [hasNewCards, setHasNewCards] = useState(false);
@@ -21,44 +21,6 @@ function MultiCardArea({
   const [openedCards, setOpenedCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [hintTimer, setHintTimer] = useState(null);
-
-  const handleCardSelect = function (i) {
-    const cardElements = cardAreaRef.current.children;
-    const selectedCard = cardElements[i];
-
-    selectedCard.classList.toggle("selected");
-
-    if (selectedCards.includes(i)) {
-      setSelectedCards((cards) => cards.filter((cardIndex) => cardIndex !== i));
-
-      return;
-    }
-
-    setSelectedCards((cards) => [ ...cards, i]);
-  };
-
-  useEffect(() => {
-    socket.on(SET_CARDS, (openedCards, remainingCards) => {
-      setRemainingCards(remainingCards);
-      setOpenedCards(openedCards);
-      setHasNewCards(true);
-    });
-
-    socket.on(SELECT_CARD, (cardIndex) => {
-      handleCardSelect(cardIndex);
-    });
-
-    socket.on(NEW_PLAYER, (player) => {
-      if (isLeader) {
-        socket.emit("let_join", player.id, openedCards, remainingCards);
-      }
-    });
-
-    return () => {
-      socket.removeAllListeners(SET_CARDS);
-      socket.removeAllListeners(SELECT_CARD);
-    };
-  }, [isLeader, handleCardSelect]);
 
   useEffect(() => {
     if (!isLeader) {
@@ -73,7 +35,44 @@ function MultiCardArea({
     setHasNewCards(true);
 
     socket.emit(SET_CARDS, roomName, openedCards, initialCards);
-  }, [isLeader]);
+  }, []);
+
+  useEffect(() => {
+    const handleCardSelect = function (i) {
+      const cardElements = cardAreaRef.current.children;
+      const selectedCard = cardElements[i];
+
+      selectedCard.classList.toggle("selected");
+
+      if (selectedCards.includes(i)) {
+        setSelectedCards((prev) => prev.filter((cardIndex) => cardIndex !== i));
+        return;
+      }
+
+      setSelectedCards((prev) => [ ...prev, i]);
+    };
+
+    socket.on(SET_CARDS, (openedCards, remainingCards) => {
+      setRemainingCards(remainingCards);
+      setOpenedCards(openedCards);
+      setHasNewCards(true);
+    });
+
+    socket.on(SELECT_CARD, (cardIndex) => {
+      handleCardSelect(cardIndex);
+    });
+
+    socket.on(NEW_PLAYER, (player) => {
+      if (isLeader) {
+        socket.emit(LET_JOIN, player.id, openedCards, remainingCards);
+      }
+    });
+
+    return () => {
+      socket.removeAllListeners(SET_CARDS);
+      socket.removeAllListeners(SELECT_CARD);
+    };
+  }, [socket.id, isLeader, cardAreaRef.current]);
 
   useEffect(() => {
     if (!hasNewCards) {

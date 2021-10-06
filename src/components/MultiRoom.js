@@ -9,6 +9,7 @@ import MultiCardArea from "./MultiCardArea";
 import MultiResult from "./MultiResult";
 import useRoomStatus from "../hooks/useRoomStatus";
 import usePlayer from "../hooks/usePlayer";
+import removeSocketListeners from "../helper/removeSocketListeners";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 import { READY, START, START_SELECT, SELECT_SUCCESS, GAME_OVER } from "../constants/socketEvents";
 
@@ -30,6 +31,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   useEffect(() => {
     return () => {
       stream.getTracks().forEach((track) => track.stop());
+      removeSocketListeners(socket);
     };
   }, []);
 

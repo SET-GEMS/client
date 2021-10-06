@@ -16,6 +16,17 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
   const [result, setResult] = useState([]);
 
   useEffect(() => {
+    return () => {
+      setState(WAITING);
+      setPeers([]);
+      setPlayers([]);
+      setIsAllReady(false);
+      setSelectTime(0);
+      setResult([]);
+    };
+  }, []);
+
+  useEffect(() => {
     socket.on(JOINED, (roomMembers) => {
       if (roomMembers.length) {
         const peers = roomMembers.map(({ id }) => {
@@ -36,6 +47,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
 
       setPlayers((prev) => [...prev, player]);
       setPeers((prev) => [...prev, newPeer]);
+      setIsAllReady(false);
     });
 
     socket.on(ALL_READY, (isAllReady) => {
@@ -44,6 +56,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
 
     socket.on(START, () => {
       setState(PLAYING);
+      setResult([]);
     });
 
     socket.on(PLAYER_LEFT, (playerId) => {
@@ -69,16 +82,6 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
       setResult(result);
       setIsAllReady(false);
     });
-
-    return () => {
-      socket.removeAllListeners(JOINED);
-      socket.removeAllListeners(NEW_PLAYER);
-      socket.removeAllListeners(ALL_READY);
-      socket.removeAllListeners(START);
-      socket.removeAllListeners(PLAYER_LEFT);
-      socket.removeAllListeners(COUNTDOWN);
-      socket.removeAllListeners(GAME_OVER);
-    };
   }, [socket.id]);
 
   useEffect(() => {
@@ -90,9 +93,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
       }
     });
 
-    return () => {
-      socket.removeAllListeners(SIGNAL);
-    };
+    return () => socket.removeAllListeners(SIGNAL);
   }, [peers.length]);
 
   return [state, setState, players, peers, isAllReady, selectTime, result];

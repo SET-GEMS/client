@@ -1,25 +1,20 @@
 import { useEffect, useState } from "react";
 import { READY, START, NEW_SELECTOR, SELECT_SUCCESS, COUNTDOWN, NEW_LEADER, GAME_OVER } from "../constants/socketEvents";
 
-function usePlayer(socket, player) {
-  const [id, setId] = useState("");
-  const [point, setPoint] = useState(0);
-  const [isReady, setIsReady] = useState(false);
-  const [isSelector, setIsSelector] = useState(false);
-  const [isLeader, setIsLeader] = useState(false);
+const initialPlayer = {
+  id: "",
+  point: 0,
+  isReady: false,
+  isSelector: false,
+  isLeader: false,
+};
 
-  useEffect(() => {
-    if (!player) {
-      setId(socket.id);
-      return;
-    }
-
-    setId(player.id);
-    setPoint(player.point || 0);
-    setIsReady(player.isReady);
-    setIsSelector(player.isSelector);
-    setIsLeader(player.isLeader);
-  }, [player, socket.id]);
+function usePlayer(socket, player = initialPlayer) {
+  const id = player.id || socket.id;
+  const [point, setPoint] = useState(player.point);
+  const [isReady, setIsReady] = useState(player.isReady);
+  const [isSelector, setIsSelector] = useState(player.isSelector);
+  const [isLeader, setIsLeader] = useState(player.isLeader);
 
   useEffect(() => {
     socket.on(READY, (isReady, playerId) => {
@@ -61,7 +56,11 @@ function usePlayer(socket, player) {
     socket.on(GAME_OVER, () => {
       setPoint(0);
     });
-  }, [socket.id, id]);
+
+    if (player.id) {
+      return;
+    }
+  }, [id, player.id]);
 
   return [point, isReady, isSelector, isLeader, setIsLeader];
 }
