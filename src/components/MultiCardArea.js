@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../helper/card";
 import Card from "./Card";
+import { GAME_OVER, SELECT_CARD, SET_CARDS } from "../constants/socketEvents";
 
 function MultiCardArea({
   onSuccess,
@@ -37,6 +38,28 @@ function MultiCardArea({
   };
 
   useEffect(() => {
+    socket.on(SET_CARDS, (openedCards, remainingCards) => {
+      setRemainingCards(remainingCards);
+      setOpenedCards(openedCards);
+      setHasNewCards(true);
+    });
+
+    socket.on(SELECT_CARD, (cardIndex) => {
+      handleCardSelect(cardIndex);
+    });
+
+    socket.on(GAME_OVER, () => {
+      onGameCompleted();
+    });
+
+    return () => {
+      socket.removeAllListeners(SET_CARDS);
+      socket.removeAllListeners(SELECT_CARD);
+      socket.removeAllListeners(GAME_OVER);
+    };
+  }, [handleCardSelect]);
+
+  useEffect(() => {
     if (!isLeader) {
       return;
     }
@@ -48,30 +71,8 @@ function MultiCardArea({
     setOpenedCards(openedCards);
     setHasNewCards(true);
 
-    socket.emit("set_cards", roomName, openedCards, initialCards);
+    socket.emit(SET_CARDS, roomName, openedCards, initialCards);
   }, [isLeader]);
-
-  useEffect(() => {
-    socket.on("set_cards", (openedCards, remainingCards) => {
-      setRemainingCards(remainingCards);
-      setOpenedCards(openedCards);
-      setHasNewCards(true);
-    });
-
-    socket.on("select_card", (cardIndex) => {
-      handleCardSelect(cardIndex);
-    });
-
-    socket.on("game_over", () => {
-      onGameCompleted();
-    });
-
-    return () => {
-      socket.removeAllListeners("set_cards");
-      socket.removeAllListeners("select_card");
-      socket.removeAllListeners("game_over");
-    };
-  }, [handleCardSelect]);
 
   useEffect(() => {
     if (!hasNewCards) {
@@ -122,7 +123,7 @@ function MultiCardArea({
     setOpenedCards(newOpenedCards);
     setHasNewCards(true);
 
-    socket.emit("set_cards", roomName, newOpenedCards, newRemainingCards);
+    socket.emit(SET_CARDS, roomName, newOpenedCards, newRemainingCards);
   }, [isRequiredShuffle]);
 
   useEffect(() => {
@@ -178,7 +179,7 @@ function MultiCardArea({
   }, [selectedCards.length]);
 
   const handleCardClick = function (i) {
-    socket.emit("select_card", roomName, i);
+    socket.emit(SELECT_CARD, roomName, i);
   };
 
   const cardElements = openedCards.map((cardProps, i) => {

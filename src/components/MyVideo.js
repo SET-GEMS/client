@@ -38,7 +38,7 @@ function MyVideo ({ stream, isMuted, isVideoOff }) {
     videoTracks.forEach((track) => track.enabled = !isVideoOff);
   }, [isVideoOff]);
 
-  return <video ref={videoRef} autoPlay playsInline muted="true" />;
+  return <video ref={videoRef} autoPlay playsInline muted={true} />;
 }
 
 MyVideo.propTypes = {

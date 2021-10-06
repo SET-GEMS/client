@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import { CHAT } from "../constants/socketEvents";
 
 function Chat({ roomName, socket }) {
   const [messages, setMessages] = useState([]);
   const windowRef = useRef();
 
   useEffect(() => {
-    socket.on("chat", (message) => {
+    socket.on(CHAT, (message) => {
       setMessages((prev) => [...prev, message]);
-      windowRef.current.scrollTo(0, "800px");
     });
 
     return () => {
-      socket.removeAllListeners("chat");
+      socket.removeAllListeners(CHAT);
     };
   }, []);
 
@@ -30,7 +30,7 @@ function Chat({ roomName, socket }) {
     const message = ev.target.message.value;
 
     setMessages((prev) => [...prev, `YOU: ${message}`]);
-    socket.emit("chat", roomName, message);
+    socket.emit(CHAT, roomName, message);
 
     ev.target.message.value = "";
   };

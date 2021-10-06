@@ -9,15 +9,20 @@ async function getCameras() {
   }
 }
 
-async function getStream(hasVideoError) {
+async function getStream(hasVideoError, cameraId) {
   const initialConstraints = {
     audio: true,
     video: !hasVideoError ? { facingMode: "user" } : false,
   };
 
+  const cameraConstraints = {
+    audio: true,
+    video: { deviceId: { exact: cameraId } },
+  };
+
   try {
     const myStream = await navigator.mediaDevices.getUserMedia(
-      initialConstraints,
+      cameraId ? cameraConstraints : initialConstraints,
     );
 
     return myStream;
@@ -26,7 +31,7 @@ async function getStream(hasVideoError) {
       return getStream(true);
     }
 
-    throw Error(err.message);
+    throw err;
   }
 }
 
