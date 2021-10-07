@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 function EnterForm({ onSubmit }) {
-  const handleFormSubmit = function(ev) {
+  const handleFormSubmit = (ev) => {
     ev.preventDefault();
     const roomName = ev.target.roomName.value;
     const nickname = ev.target.nickname.value;

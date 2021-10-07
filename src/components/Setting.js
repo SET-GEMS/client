@@ -43,15 +43,15 @@ function Setting({ stream, defaultSetting, onStreamChange }) {
     videoTracks.forEach((track) => track.enabled = !isVideoOff);
   }, [stream.id, isVideoOff]);
 
-  const handleMuteButton = function () {
+  const handleMuteButton = () => {
     setIsMuted(isMuted => !isMuted);
   };
 
-  const handleVideoButton = function () {
+  const handleVideoButton = () => {
     setIsVideoOff(isVideoOff => !isVideoOff);
   };
 
-  const handleCameraSelect = async function ({ target }) {
+  const handleCameraSelect = async ({ target }) => {
     const cameraId = target.value;
     const newStream = await getStream(false, cameraId);
     onStreamChange(newStream);

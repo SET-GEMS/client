@@ -9,7 +9,6 @@ import MultiCardArea from "./MultiCardArea";
 import MultiResult from "./MultiResult";
 import useRoomStatus from "../hooks/useRoomStatus";
 import usePlayer from "../hooks/usePlayer";
-import removeSocketListeners from "../helper/removeSocketListeners";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 import { READY, START, START_SELECT, SELECT_SUCCESS, GAME_OVER } from "../constants/socketEvents";
 
@@ -31,7 +30,6 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   useEffect(() => {
     return () => {
       stream.getTracks().forEach((track) => track.stop());
-      removeSocketListeners(socket);
     };
   }, []);
 
@@ -45,10 +43,6 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   }, [myStream.id]);
 
   useEffect(() => {
-    if (isLeader) {
-      return;
-    }
-
     if (isReady) {
       myStatusRef.current.classList.add("ready");
     } else {
@@ -64,7 +58,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     }
   }, [isSelector]);
 
-  const handleStartButton = function () {
+  const handleStartButton = () => {
     socket.emit(START, roomName);
   };
 
@@ -78,7 +72,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     </button>
   );
 
-  const handleReadyButton = function () {
+  const handleReadyButton = () => {
     if (!isReady) {
       socket.emit(READY, true, roomName);
     } else {
@@ -94,23 +88,23 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
 
   const waitingButton = isLeader ? startButton : readyButton;
 
-  const handleSetButton = function () {
+  const handleSetButton = () => {
     socket.emit(START_SELECT, roomName);
   };
 
-  const handleSuccess = function () {
+  const handleSuccess = () => {
     if (isSelector) {
       socket.emit(SELECT_SUCCESS, roomName, point + pointPerSet);
     }
   };
 
-  const handleGameCompleted = function () {
+  const handleGameCompleted = () => {
     if (isLeader) {
       socket.emit(GAME_OVER, roomName);
     }
   };
 
-  const handleRestartButton = function () {
+  const handleRestartButton = () => {
     setState(WAITING);
   };
 

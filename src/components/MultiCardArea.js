@@ -38,7 +38,7 @@ function MultiCardArea({
   }, []);
 
   useEffect(() => {
-    const handleCardSelect = function (i) {
+    const handleCardSelect = (i) => {
       const cardElements = cardAreaRef.current.children;
       const selectedCard = cardElements[i];
 
@@ -52,25 +52,25 @@ function MultiCardArea({
       setSelectedCards((prev) => [ ...prev, i]);
     };
 
+    const handleNewPlayer = (player) => {
+      if (isLeader) {
+        socket.emit(LET_JOIN, player.id, openedCards, remainingCards);
+      }
+    };
+
     socket.on(SET_CARDS, (openedCards, remainingCards) => {
       setRemainingCards(remainingCards);
       setOpenedCards(openedCards);
       setHasNewCards(true);
     });
 
-    socket.on(SELECT_CARD, (cardIndex) => {
-      handleCardSelect(cardIndex);
-    });
-
-    socket.on(NEW_PLAYER, (player) => {
-      if (isLeader) {
-        socket.emit(LET_JOIN, player.id, openedCards, remainingCards);
-      }
-    });
+    socket.on(SELECT_CARD, handleCardSelect);
+    socket.on(NEW_PLAYER, handleNewPlayer);
 
     return () => {
       socket.removeAllListeners(SET_CARDS);
       socket.removeAllListeners(SELECT_CARD);
+      socket.off(NEW_PLAYER, handleNewPlayer);
     };
   }, [socket.id, isLeader, cardAreaRef.current]);
 
@@ -178,7 +178,7 @@ function MultiCardArea({
 
   }, [selectedCards.length]);
 
-  const handleCardClick = function (i) {
+  const handleCardClick = (i) => {
     socket.emit(SELECT_CARD, roomName, i);
   };
 

@@ -125,7 +125,7 @@ function CardArea({ onSuccess, onGameCompleted }) {
     setHasNewCards(true);
   }, [selectedCards.length]);
 
-  const handleCardClick = function(i, { currentTarget }) {
+  const handleCardClick = (i, { currentTarget }) => {
     currentTarget.classList.toggle("selected");
 
     if (selectedCards.includes(i)) {

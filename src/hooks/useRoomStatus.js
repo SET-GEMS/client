@@ -33,6 +33,33 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
   }, []);
 
   useEffect(() => {
+    if (!players.length) {
+      setIsAllReady(false);
+    }
+  }, [players.length]);
+
+  useEffect(() => {
+    const handleNewPlayer = (player) => {
+      const peer = createPeer(socket, stream, player.id, false);
+      const newPeer = { id: player.id, peer };
+
+      setPlayers((prev) => [...prev, player]);
+      setPeers((prev) => [...prev, newPeer]);
+      setIsAllReady(false);
+    };
+
+    const handleStart =  () => {
+      setState(PLAYING);
+      setResult([]);
+    };
+
+    const handleCountdown = (selectTime) => setSelectTime(selectTime);
+    const handleGameOver = (result) => {
+      setState(ENDED);
+      setResult(result);
+      setIsAllReady(false);
+    };
+
     socket.on(JOINED, (roomMembers) => {
       if (roomMembers.length) {
         const peers = roomMembers.map(({ id }) => {
@@ -47,23 +74,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
       }
     });
 
-    socket.on(NEW_PLAYER, (player) => {
-      const peer = createPeer(socket, stream, player.id, false);
-      const newPeer = { id: player.id, peer };
-
-      setPlayers((prev) => [...prev, player]);
-      setPeers((prev) => [...prev, newPeer]);
-      setIsAllReady(false);
-    });
-
-    socket.on(ALL_READY, (isAllReady) => {
-      setIsAllReady(isAllReady);
-    });
-
-    socket.on(START, () => {
-      setState(PLAYING);
-      setResult([]);
-    });
+    socket.on(ALL_READY, setIsAllReady);
 
     socket.on(PLAYER_LEFT, (playerId) => {
       setPeers((prev) => {
@@ -79,15 +90,21 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
       setPlayers((prev) => prev.filter(({ id }) => id !== playerId));
     });
 
-    socket.on(COUNTDOWN, (selectTime) => {
-      setSelectTime(selectTime);
-    });
+    socket.on(NEW_PLAYER, handleNewPlayer);
+    socket.on(START, handleStart);
+    socket.on(COUNTDOWN, handleCountdown);
+    socket.on(GAME_OVER, handleGameOver);
 
-    socket.on(GAME_OVER, (result) => {
-      setState(ENDED);
-      setResult(result);
-      setIsAllReady(false);
-    });
+    return () => {
+      socket.removeAllListeners(JOINED);
+      socket.removeAllListeners(ALL_READY);
+      socket.removeAllListeners(PLAYER_LEFT);
+
+      socket.off(NEW_PLAYER, handleNewPlayer);
+      socket.off(START, handleStart);
+      socket.off(COUNTDOWN, handleCountdown);
+      socket.off(GAME_OVER, handleGameOver);
+    };
   }, [socket.id]);
 
   useEffect(() => {

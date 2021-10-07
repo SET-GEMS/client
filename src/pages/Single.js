@@ -27,7 +27,7 @@ function Single({ onHomeButtonClick }) {
     return () => clearInterval(timer);
   }, [state]);
 
-  const handleStartButtonClick = function () {
+  const handleStartButtonClick = () => {
     if (state === WAITING) {
       setState(PLAYING);
     } else {
@@ -35,17 +35,9 @@ function Single({ onHomeButtonClick }) {
     }
   };
 
-  const handleSuccess = function (count) {
-    setRestCardCount(count);
-  };
-
-  const handleGameCompleted = function () {
-    setState(ENDED);
-  };
-
-  const handleRankingFormSubmit = function () {
-    setState(WAITING);
-  };
+  const handleSuccess = (count) => setRestCardCount(count);
+  const handleGameCompleted = () => setState(ENDED);
+  const handleRankingFormSubmit = () => setState(WAITING);
 
   return (
     <div>

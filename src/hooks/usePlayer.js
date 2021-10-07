@@ -17,49 +17,51 @@ function usePlayer(socket, player = initialPlayer) {
   const [isLeader, setIsLeader] = useState(player.isLeader);
 
   useEffect(() => {
-    socket.on(READY, (isReady, playerId) => {
-      if (playerId === id) {
-        setIsReady(isReady);
-      }
-    });
+    const handleReady = (isReady, playerId) => {
+      setIsReady((prev) => playerId === id ? isReady : prev);
+    };
 
-    socket.on(START, () => {
-      setIsReady(false);
-    });
-
-    socket.on(NEW_SELECTOR, (playerId) => {
-      if (playerId === id) {
-        setIsSelector(true);
-      }
-    });
-
-    socket.on(SELECT_SUCCESS, (point, playerId) => {
+    const handleStart = () => setIsReady(false);
+    const handleNewSelector = (playerId) => setIsSelector(playerId === id);
+    const handleSelectSuccess = (point, playerId) => {
       if (playerId === id) {
         setPoint(point);
         setIsSelector(false);
       }
-    });
+    };
 
-    socket.on(COUNTDOWN, (time) => {
+    const handleCountDown = (time) => {
       if (time === 0) {
         setIsSelector(false);
       }
-    });
+    };
 
-    socket.on(NEW_LEADER, (leaderId) => {
+    const handleNewLeader = (leaderId) => {
       if (leaderId === id) {
         setIsLeader(true);
         setIsReady(false);
       }
-    });
+    };
 
-    socket.on(GAME_OVER, () => {
-      setPoint(0);
-    });
+    const handleGameOver = () => setPoint(0);
 
-    if (player.id) {
-      return;
-    }
+    socket.on(READY, handleReady);
+    socket.on(START, handleStart);
+    socket.on(NEW_SELECTOR, handleNewSelector);
+    socket.on(SELECT_SUCCESS, handleSelectSuccess);
+    socket.on(COUNTDOWN, handleCountDown);
+    socket.on(NEW_LEADER, handleNewLeader);
+    socket.on(GAME_OVER, handleGameOver);
+
+    return () => {
+      socket.off(READY, handleReady);
+      socket.off(START, handleStart);
+      socket.off(NEW_SELECTOR, handleNewSelector);
+      socket.off(SELECT_SUCCESS, handleSelectSuccess);
+      socket.off(COUNTDOWN, handleCountDown);
+      socket.off(NEW_LEADER, handleNewLeader);
+      socket.off(GAME_OVER, handleGameOver);
+    };
   }, [id, player.id]);
 
   return [point, isReady, isSelector, isLeader, setIsLeader];

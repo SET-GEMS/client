@@ -20,7 +20,7 @@ function Multi({ onHomeButtonClick }) {
   useEffect(() => {
     const socket = io("http://localhost:8000", { reconnection: false });
 
-    const handleSocketError = function () {
+    const handleSocketError = () => {
       setTemporaryMessage(
         "현재 같이하기 모드를 사용할 수 없습니다",
         setMessage,
@@ -43,7 +43,7 @@ function Multi({ onHomeButtonClick }) {
     };
   }, []);
 
-  const handleEnterForm = function (values) {
+  const handleEnterForm = (values) => {
     const { roomName, nickname, isMuted, isVideoOff } = values;
 
     setIsMuted(isMuted);
@@ -61,7 +61,7 @@ function Multi({ onHomeButtonClick }) {
     socket.emit(KNOCK, roomName, nickname, enterRoom);
   };
 
-  const handleExitRoom = function () {
+  const handleExitRoom = () => {
     myStream.getTracks().forEach(track => track.stop());
 
     setRoomName("");
