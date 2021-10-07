@@ -3,151 +3,44 @@ import PropTypes from "prop-types";
 
 import Player from "./Player";
 import MyVideo from "./MyVideo";
+import Setting from "./Setting";
 import Chat from "./Chat";
 import MultiCardArea from "./MultiCardArea";
-import createPlayer from "../helper/createPlayer";
-import setTemporaryMessage from "../helper/setTemporaryMessage";
-import { getCameras, getStream } from "../helper/video";
+import MultiResult from "./MultiResult";
+import useRoomStatus from "../hooks/useRoomStatus";
+import usePlayer from "../hooks/usePlayer";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
-import { JOINED, NEW_LEADER, NEW_PLAYER, NEW_SELECTOR, PLAYER_LEFT, READY, SIGNAL, START, START_SELECT, COUNTDOWN, END_SELECT } from "../constants/socketEvents";
+import { READY, START, START_SELECT, SELECT_SUCCESS, GAME_OVER } from "../constants/socketEvents";
 
 function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
-  const [state, setState] = useState(WAITING);
-  const [myStream, setMyStream] = useState(stream);
-  const [cameraId, setCameraId] = useState("");
-  const [cameras, setCameras] = useState([]);
-  const [isMuted, setIsMuted] = useState(streamSetting.isMuted);
-  const [isVideoOff, setIsVideoOff] = useState(streamSetting.isVideoOff);
-  const [isLeader, setIsLeader] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const [players, setPlayers] = useState([]);
-  const [waitingPlayers, setWaitingPlayers] = useState([]);
-  const [selector, setSetter] = useState("");
-  const [selectTime, setSelectTime] = useState(0);
-  const [points, setPoints] = useState({});
-  const [message, setMessage] = useState("");
+  const pointPerSet = 3;
   const myStatusRef = useRef();
+  const [myStream, setMyStream] = useState(stream);
+  const [point, isReady, isSelector, isLeader, setIsLeader] = usePlayer(socket);
+  const [
+    state,
+    setState,
+    players,
+    peers,
+    isAllReady,
+    selectTime,
+    result,
+  ] = useRoomStatus(socket, myStream, setIsLeader);
 
   useEffect(() => {
-    async function loadCameras() {
-      try {
-        const cameras = await getCameras();
-        setCameras(cameras);
-      } catch(err) {
-        setTemporaryMessage(err.message, setMessage);
-      }
-    }
-
-    loadCameras();
-
     return () => {
-      myStream.getTracks().forEach((track) => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
     };
   }, []);
 
   useEffect(() => {
-    const cameras = myStream.getVideoTracks();
-
-    if (cameras.length) {
-      const currentCamera = myStream.getVideoTracks()[0].getSettings();
-      setCameraId(currentCamera.deviceId);
-    }
-  }, [myStream]);
-
-  useEffect(() => {
-    socket.on(JOINED, (roomMembers) => {
-      if (roomMembers.length) {
-        const waitingPlayers = [];
-
-        const players = roomMembers.map((player) => {
-          if (player.isReady) {
-            waitingPlayers.push(player.id);
-          }
-
-          return createPlayer(socket, myStream, player);
-        });
-
-        setPlayers(players);
-        setWaitingPlayers(waitingPlayers);
-      } else {
-        setIsLeader(true);
+    peers.forEach(({ peer }) => {
+      if (peer.streams[0].id !== myStream.id) {
+        peer.removeStream(peer.streams[0]);
+        peer.addStream(myStream);
       }
     });
-
-    socket.on(NEW_PLAYER, (player) => {
-      const newPlayer = createPlayer(socket, myStream, player, false);
-
-      setPlayers((prev) => [...prev, newPlayer]);
-    });
-
-    socket.on(SIGNAL, (data, playerId) => {
-      const player = players.find(({ id }) => id === playerId);
-
-      if (player) {
-        player.peer.signal(data);
-      }
-    });
-
-    socket.on(READY, (isReady, playerId) => {
-      if (isReady) {
-        setWaitingPlayers((prev) => [...prev, playerId]);
-      } else {
-        setWaitingPlayers((prev) => prev.filter((id) => id !== playerId));
-      }
-    });
-
-    socket.on(START, () => {
-      setWaitingPlayers([]);
-      startGame();
-      setIsReady(false);
-    });
-
-    socket.on(PLAYER_LEFT, (playerId) => {
-      const leftPlayer = players.find(({ id }) => id !== playerId);
-
-      if (leftPlayer) {
-        leftPlayer.peer.destroy();
-      }
-
-      setPlayers((prev) => prev.filter(({ id }) => id !== playerId));
-    });
-
-    socket.on(NEW_LEADER, (leaderId) => {
-      if (leaderId === socket.id) {
-        setIsLeader(true);
-        setIsReady(false);
-      }
-    });
-
-    socket.on(NEW_SELECTOR, (playerId, selectTime) => {
-      setSetter(playerId);
-      setSelectTime(selectTime);
-    });
-
-    socket.on(COUNTDOWN, (selectTime) => {
-      setSelectTime(selectTime);
-
-      if (!selectTime) {
-        setSetter("");
-      }
-    });
-
-    socket.on(END_SELECT, () => {
-      setSelectTime(0);
-    });
-
-    return () => {
-      socket.removeAllListeners(JOINED);
-      socket.removeAllListeners(NEW_PLAYER);
-      socket.removeAllListeners(SIGNAL);
-      socket.removeAllListeners(READY);
-      socket.removeAllListeners(START);
-      socket.removeAllListeners(PLAYER_LEFT);
-      socket.removeAllListeners(NEW_LEADER);
-      socket.removeAllListeners(NEW_SELECTOR);
-      socket.removeAllListeners(COUNTDOWN);
-    };
-  }, [socket, players, myStream]);
+  }, [myStream.id]);
 
   useEffect(() => {
     if (isReady) {
@@ -155,82 +48,37 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     } else {
       myStatusRef.current.classList.remove("ready");
     }
-  }, [isReady]);
+  }, [isLeader, isReady]);
 
   useEffect(() => {
-    if (selector === socket.id) {
+    if (isSelector) {
       myStatusRef.current.classList.add("selector");
     } else {
       myStatusRef.current.classList.remove("selector");
     }
-  }, [selector, socket.id]);
+  }, [isSelector]);
 
-  const handleSuccess = function () {
-    const prevPoint = points[selector] || 0;
-    setPoints({ ...points, [selector]: prevPoint + 3 });
-
-    socket.emit(END_SELECT, roomName);
+  const handleStartButton = () => {
+    socket.emit(START, roomName);
   };
-
-  const handleGameCompleted = function () {
-    setState(ENDED);
-  };
-
-  const startGame = function () {
-    setState(PLAYING);
-    setPoints({});
-    setWaitingPlayers([]);
-  };
-
-  const handleStartButton = function () {
-    socket.emit(START, roomName, startGame);
-  };
-
-  const handleReadyButton = function () {
-    if (!isReady) {
-      socket.emit(READY, true, roomName);
-      setIsReady(true);
-    } else {
-      socket.emit(READY, false, roomName);
-      setIsReady(false);
-    }
-  };
-
-  const handleMuteButton = function () {
-    setIsMuted(isMuted => !isMuted);
-  };
-
-  const handleVideoButton = function () {
-    setIsVideoOff(isVideoOff => !isVideoOff);
-  };
-
-  const handleCameraSelect = async function ({ target }) {
-    const newStream = await getStream(false, target.value);
-
-    players.forEach(({ peer }) => {
-      peer.removeStream(peer.streams[0]);
-      peer.addStream(newStream);
-    });
-
-    setMyStream(newStream);
-  };
-
-  const handleSetButton = function () {
-    socket.emit(START_SELECT, roomName);
-  };
-
-  const isAbleToStart = players.length
-    && players.length === waitingPlayers.length;
 
   const startButton = (
     <button
       type="button"
       onClick={handleStartButton}
-      disabled={!isAbleToStart}
+      disabled={!isAllReady}
     >
-      {isAbleToStart ? "START" : "WAITING"}
+      {isAllReady ? "START" : "WAITING"}
     </button>
   );
+
+  const handleReadyButton = () => {
+    if (!isReady) {
+      socket.emit(READY, true, roomName);
+    } else {
+      socket.emit(READY, false, roomName);
+    }
+  };
 
   const readyButton = (
     <button type="button" onClick={handleReadyButton}>
@@ -240,39 +88,46 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
 
   const waitingButton = isLeader ? startButton : readyButton;
 
-  const cameraOptions = cameras.map((camera) => {
-    return (
-      <option
-        key={camera.deviceId}
-        value={camera.deviceId}
-      >{camera.label}</option>
-    );
-  });
+  const handleSetButton = () => {
+    socket.emit(START_SELECT, roomName);
+  };
+
+  const handleSuccess = () => {
+    if (isSelector) {
+      socket.emit(SELECT_SUCCESS, roomName, point + pointPerSet);
+    }
+  };
+
+  const handleGameCompleted = () => {
+    if (isLeader) {
+      socket.emit(GAME_OVER, roomName);
+    }
+  };
+
+  const handleRestartButton = () => {
+    setState(WAITING);
+  };
 
   const playerElements = players.map((player) => {
-    const isReady = waitingPlayers.includes(player.id);
-    const isSelector = selector === player.id;
-    const point = points[player.id];
+    const peer = peers.find(({ id }) => id === player.id);
 
     return (
       <Player
         key={player.id}
+        socket={socket}
+        peer={peer ? peer.peer : null}
         player={player}
-        isReady={isReady}
-        isSelector={isSelector}
-        point={point}
       />
     );
   });
 
   return (
     <div>
-      {message && <p>{message}</p>}
       <div className="play">
         <div className="main">
           {state === WAITING
             && <Chat roomName={roomName} socket={socket} />}
-          {selector !== socket.id && <div className="protector" />}
+          {state === PLAYING && !isSelector && <div className="protector" />}
           {state === PLAYING
             && <MultiCardArea
               onSuccess={handleSuccess}
@@ -282,34 +137,22 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
               isLeader={isLeader}
             />}
           {state === ENDED
-            && <div>게임결과</div>}
+            && <MultiResult result={result} />}
         </div>
         <div className="sub">
           <div className="players">
-            <div>
-              <button onClick={handleMuteButton}>
-                {isMuted ? "UNMUTE" : "MUTE"}
-              </button>
-              <button onClick={handleVideoButton}>
-                {isVideoOff ? "VIDEO ON" : "VIDEO OFF"}
-              </button>
-            </div>
-            <div>
-              <select
-                defaultValue={cameraId}
-                onChange={handleCameraSelect}>
-                {cameraOptions}
-              </select>
-            </div>
-            <div className={isReady ? "ready player" : "player"} ref={myStatusRef} >
+            <Setting
+              stream={myStream}
+              defaultSetting={streamSetting}
+              onStreamChange={setMyStream}
+            />
+            <div className="player" ref={myStatusRef} >
               <p>{nickname}</p>
               <MyVideo
                 stream={myStream}
-                isMuted={isMuted}
-                isVideoOff={isVideoOff}
               />
               <div>
-                {points[socket.id] || 0}
+                {point || 0}
               </div>
             </div>
             {playerElements}
@@ -321,6 +164,8 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
             && <button disabled={selectTime} onClick={handleSetButton}>
               {selectTime ? selectTime : "SET"}
             </button>}
+          {state === ENDED
+            && <button onClick={handleRestartButton}>RESTART</button>}
         </div>
       </div>
     </div>
@@ -331,17 +176,15 @@ MultiRoom.propTypes = {
   roomName: PropTypes.string,
   nickname: PropTypes.string,
   stream: PropTypes.shape({
-    getVideoTracks: PropTypes.func,
+    id: PropTypes.string,
+    getTracks: PropTypes.func,
   }),
   streamSetting: PropTypes.shape({
     isMuted: PropTypes.bool,
     isVideoOff: PropTypes.bool,
   }),
   socket: PropTypes.shape({
-    on: PropTypes.func,
     emit: PropTypes.func,
-    removeAllListeners: PropTypes.func,
-    id: PropTypes.string,
   }),
 };
 

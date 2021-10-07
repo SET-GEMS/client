@@ -35,4 +35,11 @@ async function getStream(hasVideoError, cameraId) {
   }
 }
 
-export { getCameras, getStream };
+function getCameraId(stream) {
+  const currentCamera = stream.getVideoTracks()[0];
+  const cameraId = currentCamera ? currentCamera.getSettings().deviceId : "";
+
+  return cameraId;
+}
+
+export { getCameras, getStream, getCameraId };

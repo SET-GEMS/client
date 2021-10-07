@@ -25,7 +25,7 @@ function Chat({ roomName, socket }) {
     lastMessageElement.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  const handleFormSubmit = function (ev) {
+  const handleFormSubmit = (ev) => {
     ev.preventDefault();
     const message = ev.target.message.value;
 

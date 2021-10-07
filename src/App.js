@@ -7,10 +7,7 @@ import { SINGLE, MULTI } from "./constants/mode";
 
 function App() {
   const [mode, setMode] = useState("");
-
-  const handleHomeButtonClick = function() {
-    setMode("");
-  };
+  const handleHomeButtonClick = () => setMode("");
 
   return (
     <div className="App">

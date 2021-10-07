@@ -5,13 +5,8 @@ import Guide from "../components/Guide";
 import { SINGLE, MULTI } from "../constants/mode";
 
 function Welcome({ onSelectMode }) {
-  const handleSingleButtonClick = function() {
-    onSelectMode(SINGLE);
-  };
-
-  const handleMultiButtonClick = function() {
-    onSelectMode(MULTI);
-  };
+  const handleSingleButtonClick = () => onSelectMode(SINGLE);
+  const handleMultiButtonClick = () => onSelectMode(MULTI);
 
   return (
     <div>

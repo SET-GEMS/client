@@ -8,7 +8,7 @@ function SingleResult({ time, rankerStandard, onSubmit }) {
   const [error, setError] = useState("");
   let isSubmitted = false;
 
-  const handleFormSubmit = async function(ev) {
+  const handleFormSubmit = async (ev) => {
     ev.preventDefault();
 
     if (isSubmitted) {
