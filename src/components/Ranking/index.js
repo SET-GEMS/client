@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { getRanking } from "../api/ranking";
+import "./Ranking.css";
+import { getRanking } from "../../api/ranking";
 
 function Ranking({ setRankerStandard }) {
   const [error, setError] = useState("");

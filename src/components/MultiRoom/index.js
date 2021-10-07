@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-import Player from "./Player";
-import MyVideo from "./MyVideo";
-import Setting from "./Setting";
-import Chat from "./Chat";
-import MultiCardArea from "./MultiCardArea";
-import MultiResult from "./MultiResult";
-import useRoomStatus from "../hooks/useRoomStatus";
-import usePlayer from "../hooks/usePlayer";
-import { WAITING, PLAYING, ENDED } from "../constants/playState";
-import { READY, START, START_SELECT, SELECT_SUCCESS, GAME_OVER } from "../constants/socketEvents";
+import "./MultiRoom.css";
+import Player from "../Player";
+import MyVideo from "../MyVideo";
+import Setting from "../Setting";
+import Chat from "../Chat";
+import { MultiCardArea } from "../CardArea";
+import { MultiResult } from "../Result";
+import useRoomStatus from "../../hooks/useRoomStatus";
+import usePlayer from "../../hooks/usePlayer";
+import { WAITING, PLAYING, ENDED } from "../../constants/playState";
+import { READY, START, START_SELECT, SELECT_SUCCESS, GAME_OVER } from "../../constants/socketEvents";
 
 function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const pointPerSet = 3;
@@ -166,6 +167,13 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
             </button>}
           {state === ENDED
             && <button onClick={handleRestartButton}>RESTART</button>}
+        </div>
+        <div className="mobile-setting">
+          <Setting
+            stream={myStream}
+            defaultSetting={streamSetting}
+            onStreamChange={setMyStream}
+          />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-import usePlayer from "../hooks/usePlayer";
+import usePlayer from "../../hooks/usePlayer";
 
 function Player({ socket, peer, player }) {
   const [point, isReady, isSelector] = usePlayer(socket, player);

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../helper/card";
-import Card from "./Card";
-import { NEW_PLAYER, SELECT_CARD, SET_CARDS, LET_JOIN } from "../constants/socketEvents";
+import Card from "../Card";
+import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../../helper/card";
+import { NEW_PLAYER, SELECT_CARD, SET_CARDS, LET_JOIN } from "../../constants/socketEvents";
 
 function MultiCardArea({
   onSuccess,

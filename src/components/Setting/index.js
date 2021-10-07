@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import { getCameras, getStream, getCameraId } from "../helper/video";
-import setTemporaryMessage from "../helper/setTemporaryMessage";
+import {
+  BsFillVolumeMuteFill, BsFillVolumeUpFill,
+  BsCameraVideoOffFill, BsCameraVideoFill,
+} from "react-icons/bs";
+
+import "./Setting.css";
+import { getCameras, getStream, getCameraId } from "../../helper/video";
+import setTemporaryMessage from "../../helper/setTemporaryMessage";
 
 function Setting({ stream, defaultSetting, onStreamChange }) {
   const [cameras, setCameras] = useState([]);
@@ -67,13 +73,13 @@ function Setting({ stream, defaultSetting, onStreamChange }) {
   });
 
   return (
-    <div>
-      <div>
+    <div className="setting">
+      <div className="setting-button">
         <button onClick={handleMuteButton}>
-          {isMuted ? "UNMUTE" : "MUTE"}
+          {isMuted ? <BsFillVolumeUpFill /> : <BsFillVolumeMuteFill />}
         </button>
         <button onClick={handleVideoButton}>
-          {isVideoOff ? "VIDEO ON" : "VIDEO OFF"}
+          {isVideoOff ? <BsCameraVideoFill /> : <BsCameraVideoOffFill />}
         </button>
       </div>
       <div>

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
-import { getBackgroundImageUri, getGemImageUri } from "../helper/image";
-import { GEM_COLOR, GEM_SHAPE, METAL_COLOR, METAL_SHAPE } from "../constants/cardProperty";
+import "./Card.css";
+import { getBackgroundImageUri, getGemImageUri } from "../../helper/image";
+import { GEM_COLOR, GEM_SHAPE, METAL_COLOR, METAL_SHAPE } from "../../constants/cardProperty";
 
 function Card({
   gemColor, gemShape,

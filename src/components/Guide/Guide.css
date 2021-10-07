@@ -1,0 +1,34 @@
+.guide {
+  width: fit-content;
+  margin: 10px auto;
+  padding: 10px 30px;
+  background-color: var(--inner-background-color);
+  text-align: start;
+}
+
+.guide ol {
+  margin-bottom: 5px;
+}
+
+.example {
+  padding-left: 20px;
+}
+
+.example .card {
+  margin: 10px 2px;
+}
+
+@media screen and (min-width: 425px) {
+  .example .card {
+    width: calc(var(--card-width) * 0.6);
+    height: calc(var(--card-height) * 0.6);
+    margin: 10px 5px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .guide ul {
+    list-style: none;
+    padding: 0;
+  }
+}

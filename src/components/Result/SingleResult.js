@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import "./Result.css";
 
-import { postRanking } from "../api/ranking";
+import { postRanking } from "../../api/ranking";
 
 function SingleResult({ time, rankerStandard, onSubmit }) {
   const isRanker = time < rankerStandard;
