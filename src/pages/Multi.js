@@ -21,7 +21,9 @@ function Multi({ onHomeButtonClick }) {
   const [myStream, setMyStream] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:8000", { reconnection: false });
+    const socket = io(process.env.REACT_APP_SERVER_URL,
+      { reconnection: false },
+    );
 
     const handleSocketError = () => {
       setTemporaryMessage(
