@@ -2,6 +2,7 @@ export const CONNECT_ERROR = "connect_error";
 export const CONNECT_FAILED = "connect_failed";
 export const DISCONNECT = "disconnect";
 export const FULL_ROOM = "full_room";
+export const INVALID_NICKNAME = "invalid_nickname";
 export const JOIN_ROOM = "join_room";
 export const KNOCK = "knock";
 export const EXIT_ROOM = "exit_room";

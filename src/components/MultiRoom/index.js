@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-import "./MultiRoom.css";
 import Player from "../Player";
 import MyVideo from "../MyVideo";
 import Setting from "../Setting";
