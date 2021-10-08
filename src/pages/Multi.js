@@ -6,7 +6,10 @@ import EnterForm from "../components/EnterForm";
 import MultiRoom from "../components/MultiRoom";
 import setTemporaryMessage from "../helper/setTemporaryMessage";
 import { getStream } from "../helper/video";
-import { CONNECT_ERROR, CONNECT_FAILED, DISCONNECT, EXIT_ROOM, FULL_ROOM, JOIN_ROOM, KNOCK } from "../constants/socketEvents";
+import {
+  CONNECT_ERROR, CONNECT_FAILED, DISCONNECT, EXIT_ROOM,
+  FULL_ROOM, INVALID_NICKNAME, JOIN_ROOM, KNOCK,
+} from "../constants/socketEvents";
 
 function Multi({ onHomeButtonClick }) {
   const [roomName, setRoomName] = useState("");
@@ -34,6 +37,10 @@ function Multi({ onHomeButtonClick }) {
 
     socket.on(FULL_ROOM, () => {
       setTemporaryMessage("정원초과로 들어갈 수 없는 방입니다", setMessage);
+    });
+
+    socket.on(INVALID_NICKNAME, (message) => {
+      setTemporaryMessage(message, setMessage);
     });
 
     setSocket(socket);
@@ -90,7 +97,7 @@ function Multi({ onHomeButtonClick }) {
         <h1>{roomName ? roomName : "같이하기"}</h1>
         {roomName ? exitButton : homeButton}
       </div>
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
       {!roomName
         ? <EnterForm onSubmit={handleEnterForm} />
         : <MultiRoom
