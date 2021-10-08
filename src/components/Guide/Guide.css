@@ -3,7 +3,7 @@
   height: 70vh;
   margin: 10px auto;
   padding: 10px 30px;
-  background-color: var(--inner-background-color);
+  background-color: var(--sub-color);
   text-align: start;
   overflow: auto;
 }
