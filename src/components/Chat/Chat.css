@@ -1,11 +1,3 @@
-::-webkit-scrollbar {
-  background-color: var(--background-color);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--inner-background-color);
-}
-
 .chatting-window {
   display: flex;
   flex-direction: column;
