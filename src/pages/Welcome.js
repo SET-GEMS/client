@@ -10,6 +10,7 @@ function Welcome({ onSelectMode }) {
 
   return (
     <div>
+      <h1>SET GEMS</h1>
       <Guide />
       <button
         type="button"

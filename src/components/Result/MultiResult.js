@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import "./Result.css";
+
 function MultiResult({ result }) {
   const resultElements = [...result].sort((a, b) => b.point - a.point)
     .map(({ nickname, point }, i) => (
@@ -8,7 +10,7 @@ function MultiResult({ result }) {
     ));
 
   return (
-    <div>
+    <div className="result" >
       <h2>GAME RESULT</h2>
       {resultElements}
     </div>

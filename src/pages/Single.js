@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import CardArea from "../components/CardArea";
 import Ranking from "../components/Ranking";
-import SingleResult from "../components/SingleResult";
+import { SingleCardArea } from "../components/CardArea";
+import { SingleResult } from "../components/Result";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 
 function Single({ onHomeButtonClick }) {
@@ -52,7 +52,7 @@ function Single({ onHomeButtonClick }) {
           {state === WAITING
             && <Ranking setRankerStandard={setRankerStandard} />}
           {state === PLAYING
-            && <CardArea
+            && <SingleCardArea
             onSuccess={handleSuccess}
             onGameCompleted={handleGameCompleted} />}
           {state === ENDED

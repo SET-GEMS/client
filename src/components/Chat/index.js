@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { CHAT } from "../constants/socketEvents";
+
+import "./Chat.css";
+import { CHAT } from "../../constants/socketEvents";
 
 function Chat({ roomName, socket }) {
   const [messages, setMessages] = useState([]);
@@ -40,7 +42,7 @@ function Chat({ roomName, socket }) {
   });
 
   return (
-    <div>
+    <div className="chat">
       <h2>CHAT</h2>
       <div className="chatting-window" ref={windowRef}>
         {messageElements}

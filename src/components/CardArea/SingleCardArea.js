@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../helper/card";
-import Card from "../components/Card";
+import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../../helper/card";
+import Card from "../Card";
 
-function CardArea({ onSuccess, onGameCompleted }) {
+function SingleCardArea({ onSuccess, onGameCompleted }) {
   const hintTime = 60000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
@@ -147,9 +147,9 @@ function CardArea({ onSuccess, onGameCompleted }) {
   );
 }
 
-CardArea.propTypes = {
+SingleCardArea.propTypes = {
   onSuccess: PropTypes.func,
   onGameCompleted: PropTypes.func,
 };
 
-export default CardArea;
+export default SingleCardArea;
