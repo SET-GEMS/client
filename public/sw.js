@@ -1,4 +1,4 @@
-const cacheName = "set-gems-v2";
+const cacheName = "set-gems-v1";
 const contentToCache = [
   "/index.html",
   "/logo64.png",
@@ -56,13 +56,13 @@ async function findOrCreateCache(request) {
 
     const response = await fetch(request);
 
-    if (request.url.startsWith("http")) {
+    if (request.url.startsWith("http") && !request.url.includes("socket")) {
       const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
+      await cache.put(request, response.clone());
     }
 
     return response;
   } catch (err) {
-    console.log("failed add cache", err);
+    console.log("failed add cache", err, request.url);
   }
 }
