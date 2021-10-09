@@ -4,8 +4,6 @@ const contentToCache = [
   "/favicon.ico",
   "/logo192.png",
   "/logo512.png",
-  "/manifest.json",
-  "/robots.txt",
   "/image",
   "/image/gems",
   "/image/gems/blue-oval.png",
