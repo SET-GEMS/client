@@ -1,7 +1,7 @@
 const cacheName = "set-gems-v1";
 const contentToCache = [
   "/index.html",
-  "/logo64.png",
+  "/favicon.ico",
   "/logo192.png",
   "/logo512.png",
   "/manifest.json",
