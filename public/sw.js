@@ -34,13 +34,17 @@ self.addEventListener("install", (ev) => {
 });
 
 self.addEventListener("fetch", (ev) => {
+  if (ev.request.mode === "cors") {
+    return;
+  }
+
   ev.respondWith(findOrCreateCache(ev.request));
 });
 
 async function createCache() {
   try {
     const cache = await caches.open(cacheName);
-    cache.addAll(contentToCache);
+    await cache.addAll(contentToCache);
   } catch(err) {
     console.log("failed to cache" + err);
   }
