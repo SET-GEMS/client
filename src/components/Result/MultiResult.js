@@ -12,7 +12,9 @@ function MultiResult({ result }) {
   return (
     <div className="result" >
       <h2>GAME RESULT</h2>
-      {resultElements}
+      <div>
+        {resultElements}
+      </div>
     </div>
   );
 }

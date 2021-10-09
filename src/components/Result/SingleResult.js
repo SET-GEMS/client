@@ -33,7 +33,7 @@ function SingleResult({ time, rankerStandard, onSubmit }) {
       <h2>{`완료 시간: ${time}초`}</h2>
       {error && <p>{error}</p>}
       {isRanker && <form onSubmit={handleFormSubmit}>
-        <div className="guide">
+        <div>
           <p>당신은 상위 20인에 들었습니다.</p>
           <p>랭킹에 기록을 등록할 수 있습니다!</p>
           <label htmlFor="nickname">
