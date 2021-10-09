@@ -4,8 +4,6 @@ const contentToCache = [
   "/favicon.ico",
   "/logo192.png",
   "/logo512.png",
-  "/manifest.json",
-  "/robots.txt",
   "/image",
   "/image/gems",
   "/image/gems/blue-oval.png",
@@ -34,13 +32,17 @@ self.addEventListener("install", (ev) => {
 });
 
 self.addEventListener("fetch", (ev) => {
+  if (ev.request.mode === "cors") {
+    return;
+  }
+
   ev.respondWith(findOrCreateCache(ev.request));
 });
 
 async function createCache() {
   try {
     const cache = await caches.open(cacheName);
-    cache.addAll(contentToCache);
+    await cache.addAll(contentToCache);
   } catch(err) {
     console.log("failed to cache" + err);
   }
