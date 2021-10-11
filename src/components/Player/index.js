@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
+import "./Player.css";
 import usePlayer from "../../hooks/usePlayer";
 
 function Player({ socket, peer, player }) {

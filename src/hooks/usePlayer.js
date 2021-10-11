@@ -10,11 +10,13 @@ const initialPlayer = {
 };
 
 function usePlayer(socket, player = initialPlayer) {
+  const penaltyTime = 5000;
   const id = player.id || socket.id;
   const [point, setPoint] = useState(player.point);
   const [isReady, setIsReady] = useState(player.isReady);
   const [isSelector, setIsSelector] = useState(player.isSelector);
   const [isLeader, setIsLeader] = useState(player.isLeader);
+  const [hasPenalty, setHasPenalty] = useState(false);
 
   useEffect(() => {
     const handleReady = (isReady, playerId) => {
@@ -26,12 +28,6 @@ function usePlayer(socket, player = initialPlayer) {
     const handleSelectSuccess = (point, playerId) => {
       if (playerId === id) {
         setPoint(point);
-        setIsSelector(false);
-      }
-    };
-
-    const handleCountDown = (time) => {
-      if (time === 0) {
         setIsSelector(false);
       }
     };
@@ -49,7 +45,6 @@ function usePlayer(socket, player = initialPlayer) {
     socket.on(START, handleStart);
     socket.on(NEW_SELECTOR, handleNewSelector);
     socket.on(SELECT_SUCCESS, handleSelectSuccess);
-    socket.on(COUNTDOWN, handleCountDown);
     socket.on(NEW_LEADER, handleNewLeader);
     socket.on(GAME_OVER, handleGameOver);
 
@@ -58,13 +53,37 @@ function usePlayer(socket, player = initialPlayer) {
       socket.off(START, handleStart);
       socket.off(NEW_SELECTOR, handleNewSelector);
       socket.off(SELECT_SUCCESS, handleSelectSuccess);
-      socket.off(COUNTDOWN, handleCountDown);
       socket.off(NEW_LEADER, handleNewLeader);
       socket.off(GAME_OVER, handleGameOver);
     };
-  }, [id, player.id]);
+  }, [id, player.id, isSelector]);
 
-  return [point, isReady, isSelector, isLeader, setIsLeader];
+  useEffect(() => {
+    const handleCountDown = (time) => {
+      if (time === 0 && isSelector) {
+        setIsSelector(false);
+        setHasPenalty(true);
+      }
+    };
+
+    socket.on(COUNTDOWN, handleCountDown);
+
+    return () => socket.off(COUNTDOWN, handleCountDown);
+  }, [isSelector]);
+
+  useEffect(() => {
+    let timer = null;
+
+    if (hasPenalty) {
+      timer = setTimeout(() => {
+        setHasPenalty(false);
+      }, penaltyTime);
+    }
+
+    return () => clearTimeout(timer);
+  }, [hasPenalty]);
+
+  return [point, isReady, isSelector, hasPenalty, isLeader, setIsLeader];
 }
 
 export default usePlayer;

@@ -32,7 +32,8 @@ function shuffleCards(cards) {
 
 function validateSet(set) {
   const wrongPropertyCount = 2;
-  const properties = [...Array(4)].map(() => new Set());
+  const numberOfProperties = 4;
+  const properties = [...Array(numberOfProperties)].map(() => new Set());
 
   set.forEach((card) => {
     Object.values(card).forEach((property, i) => {

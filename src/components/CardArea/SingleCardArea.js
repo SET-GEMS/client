@@ -5,7 +5,7 @@ import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../../h
 import Card from "../Card";
 
 function SingleCardArea({ onSuccess, onGameCompleted }) {
-  const hintTime = 60000;
+  const hintTime = 30000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
   const [hasNewCards, setHasNewCards] = useState(false);

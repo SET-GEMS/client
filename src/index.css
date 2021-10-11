@@ -3,6 +3,8 @@
   --card-height: 200px;
   --main-color: #000000;
   --sub-color: #ffffff;
+  --point-color-green: #006300;
+  --point-color-red: #ac2f3d;
 }
 
 ::-webkit-scrollbar {
@@ -144,15 +146,11 @@ label {
 }
 
 .players select {
-  border: none;
-  background-color: var(--main-color);
-  color: var(--sub-color);
-}
-
-.players select {
   width: 80%;
   border: none;
   outline: none;
+  background-color: var(--main-color);
+  color: var(--sub-color);
   font-family: inherit;
 }
 
@@ -166,29 +164,6 @@ label {
   justify-content: space-evenly;
   padding-bottom: 10px;
   border: 1px solid var(--main-color);
-}
-
-.player.ready {
-  background-color: green;
-}
-
-.player.selector {
-  background-color: #ac2f3d;
-}
-
-.player p {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  padding-left: 10px;
-  line-height: 1.5rem;
-  text-align: left;
-}
-
-.player video {
-  width: 104px;
-  height: 78px;
-  background-color: var(--main-color);
 }
 
 @media screen and (max-width: 920px) {
@@ -246,15 +221,5 @@ label {
 
   .header {
     padding-bottom: 0;
-  }
-}
-
-
-@media screen and (max-width: 576px) {
-  .player {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: 20vw;
-    padding: 0;
   }
 }
