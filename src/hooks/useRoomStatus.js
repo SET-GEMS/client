@@ -4,7 +4,7 @@ import createPeer from "../helper/createPeer";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 import {
   JOINED, SIGNAL, NEW_PLAYER, PLAYER_LEFT,
-  ALL_READY, START, COUNTDOWN, GAME_OVER,
+  ALL_READY, START, COUNTDOWN, SELECT_SUCCESS, GAME_OVER,
 } from "../constants/socketEvents";
 
 function useRoomStatus(socket, stream, onChangeIsLeader) {
@@ -54,6 +54,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
     };
 
     const handleCountdown = (selectTime) => setSelectTime(selectTime);
+    const handleSelectSuccess = () => setSelectTime(0);
     const handleGameOver = (result) => {
       setState(ENDED);
       setResult(result);
@@ -93,6 +94,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
     socket.on(NEW_PLAYER, handleNewPlayer);
     socket.on(START, handleStart);
     socket.on(COUNTDOWN, handleCountdown);
+    socket.on(SELECT_SUCCESS, handleSelectSuccess);
     socket.on(GAME_OVER, handleGameOver);
 
     return () => {
@@ -103,6 +105,7 @@ function useRoomStatus(socket, stream, onChangeIsLeader) {
       socket.off(NEW_PLAYER, handleNewPlayer);
       socket.off(START, handleStart);
       socket.off(COUNTDOWN, handleCountdown);
+      socket.off(SELECT_SUCCESS, handleSelectSuccess);
       socket.off(GAME_OVER, handleGameOver);
     };
   }, [socket.id]);

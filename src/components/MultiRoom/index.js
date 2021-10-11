@@ -16,7 +16,9 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
   const pointPerSet = 3;
   const myStatusRef = useRef();
   const [myStream, setMyStream] = useState(stream);
-  const [point, isReady, isSelector, isLeader, setIsLeader] = usePlayer(socket);
+  const [
+    point, isReady, isSelector, hasPenalty,
+    isLeader, setIsLeader] = usePlayer(socket);
   const [
     state,
     setState,
@@ -92,6 +94,14 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
     socket.emit(START_SELECT, roomName);
   };
 
+  const setText = hasPenalty ? "Can't SET" : "SET";
+
+  const setButton = (
+    <button disabled={selectTime || hasPenalty} onClick={handleSetButton}>
+      {selectTime !== 0 ? selectTime : setText}
+    </button>
+  );
+
   const handleSuccess = () => {
     if (isSelector) {
       socket.emit(SELECT_SUCCESS, roomName, point + pointPerSet);
@@ -160,10 +170,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
         </div>
         <div className="button">
           {state === WAITING && waitingButton}
-          {state === PLAYING
-            && <button disabled={selectTime} onClick={handleSetButton}>
-              {selectTime ? selectTime : "SET"}
-            </button>}
+          {state === PLAYING && setButton}
           {state === ENDED
             && <button onClick={handleRestartButton}>RESTART</button>}
         </div>
