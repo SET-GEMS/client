@@ -6,6 +6,8 @@
 3. [에러로그](#에러로그)
 
 ## SET GEMS 소개
+https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-a480-6fff8b3e0b19.mp4
+
 - 웹 게임 주소: https://www.setgems.online/
 - 사용 기술 스택
   - MERN(MongoDB, Express, React, Node)
@@ -73,6 +75,6 @@
 - 플레이어 퇴장 시 peers를 빈 배열로 재설정할 때, 기존 peers에 담긴 peer들도 peer.destroy 메소드로 정리함.
 
 ### Service Worker 적용 후, 서버와의 연결이 끊김
-- 태스크 카드: [#29 프로그레시브 웹 앱 적용](https://github.com/SET-GEMS/set-gems-client/issues/29)
+- 태스크 카드: [#29 프로그레시브 웹 앱 적용]
 - 원인: service worker의 fetch 이벤트리스너가 cors 요청을 처리하지 못함.
 - 수정: cors 요청은 service worker의 fethc 이벤트 리스너가 처리하지 않게 조건문으로 cors요청을 걸러냄.
