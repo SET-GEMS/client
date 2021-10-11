@@ -1,6 +1,6 @@
 .guide {
-  width: fit-content;
-  height: 70vh;
+  height: fit-content;
+  max-height: 70vh;
   margin: 10px auto;
   padding: 10px 30px;
   background-color: var(--sub-color);
@@ -12,6 +12,11 @@
   margin-bottom: 5px;
 }
 
+.guide button {
+  background-color: var(--main-color);
+  color: var(--sub-color);
+}
+
 .example {
   padding-left: 20px;
 }
@@ -20,17 +25,24 @@
   margin: 10px 2px;
 }
 
+@media screen and (min-width: 920px) {
+  .guide {
+    width: calc(var(--card-width) * 4 + 70px + 200px);
+  }
+}
+
 @media screen and (min-width: 425px) {
   .example .card {
     width: calc(var(--card-width) * 0.6);
     height: calc(var(--card-height) * 0.6);
     margin: 10px 5px;
   }
-}
 
-@media screen and (max-width: 425px) {
-  .guide ul {
-    list-style: none;
-    padding: 0;
+  .example .card-area {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(9, calc(var(--card-width) * 0.6));
+    gap: 5px;
+    padding: 20px 10px;
   }
 }
