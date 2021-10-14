@@ -27,6 +27,10 @@ self.addEventListener("install", (ev) => {
   ev.waitUntil(createCache());
 });
 
+self.addEventListener("activate", (ev) => {
+  ex.waitUntil(clearCache());
+});
+
 self.addEventListener("fetch", (ev) => {
   if (ev.request.mode === "cors") {
     return;
@@ -40,7 +44,22 @@ async function createCache() {
     const cache = await caches.open(cacheName);
     await cache.addAll(contentToCache);
   } catch(err) {
-    console.log("failed to cache" + err);
+    console.log("Failed to cache", err);
+  }
+}
+
+async function clearCache() {
+  try {
+    const keys = await caches.keys();
+    const pendingDeleteCaches = keys.map((key) => {
+      if (cacheName !== key) {
+        return caches.delete(key);
+      }
+    });
+
+    await Promise.all(pendingDeleteCaches);
+  } catch(err) {
+    console.log("Failed to clear caches", err);
   }
 }
 
@@ -60,7 +79,7 @@ async function findOrCreateCache(request) {
     }
 
     return response;
-  } catch (err) {
-    console.log("failed add cache", err, request.url);
+  } catch(err) {
+    console.log("Failed add cache", err, request.url);
   }
 }
