@@ -4,10 +4,9 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Welcome from "../pages/Welcome";
 
 describe("Welcome page", () => {
-  let mockHandleSelectMode = null;
+  const mockHandleSelectMode = jest.fn();
 
   beforeEach(async () => {
-    mockHandleSelectMode = jest.fn();
     render(<Welcome onSelectMode={mockHandleSelectMode} />);
   });
 
