@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 import "./Tutorial.css";
 import Card from "../Card";
+import CARD_PROPERTY_KOR from "../../constants/koCardProperty";
 import { GEM_COLOR, GEM_SHAPE, METAL_COLOR, METAL_SHAPE } from "../../constants/cardProperty";
-import { GEM_COLOR_KOR, GEM_SHAPE_KOR, METAL_COLOR_KOR, METAL_SHAPE_KOR } from "../../constants/koCardProperty";
 
 function Tutorial() {
   const numberOfCardsPerSet = 3;
@@ -103,10 +103,10 @@ function Tutorial() {
   const cardTds = selectedCards.map((cardIndex) => {
     const { gemColor, gemShape, metalColor, metalShape } = cards[cardIndex];
     return [
-      <td key={`gc${cardIndex}`}>{GEM_COLOR_KOR[gemColor]}</td>,
-      <td key={`gs${cardIndex}`}>{GEM_SHAPE_KOR[gemShape]}</td>,
-      <td key={`mc${cardIndex}`}>{METAL_COLOR_KOR[metalColor]}</td>,
-      <td key={`ms${cardIndex}`}>{METAL_SHAPE_KOR[metalShape]}</td>,
+      <td key={`gc${cardIndex}`}>{CARD_PROPERTY_KOR[gemColor]}</td>,
+      <td key={`gs${cardIndex}`}>{CARD_PROPERTY_KOR[gemShape]}</td>,
+      <td key={`mc${cardIndex}`}>{CARD_PROPERTY_KOR[metalColor]}</td>,
+      <td key={`ms${cardIndex}`}>{CARD_PROPERTY_KOR[metalShape]}</td>,
     ];
   });
 
@@ -133,7 +133,7 @@ function Tutorial() {
   return (
     <div className="tutorial">
       <div>
-        <p>속성이 두개만 같다면 올바른 조합이 아닙니다.</p>
+        <p>두장의 카드만 속성의 값이 같다면 조합이 아닙니다.</p>
         <table>
           <thead>
             <tr>
