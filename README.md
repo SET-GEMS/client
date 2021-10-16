@@ -48,7 +48,7 @@
 # 선택과 이유
 ## WebRTC Mesh VS SFU
 - Mesh / P2P
-  - 서버에서 peer 간의 offer, answer라는 session 정보 signal만을 중계하고 각자의 비디오 및 오디오 등 미디어 스트림을 상대방과 직접 주고 받는 단순한 구조 
+  - 서버에서는 peer 간의 offer, answer라는 session 정보 signal만을 중계하고, 각자의 비디오 및 오디오 등 미디어 스트림은 브라우저 간에 직접 주고 받는 단순한 구조 
   - 장점: 서버의 부담이 거의 없으며, 구현이 간단하다.
   - 단점: 각각의 하드웨어에서 참여자 수 만큼의 비디오를 인코딩 해야하기 때문에 참여인원 수가 많을 경우, 참여자 개인의 하드웨어 및 네트워크 환경에 큰 부담을 줄 수 있다.
 - SFU(Selective Forwarding Unit)
