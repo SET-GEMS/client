@@ -98,24 +98,24 @@ https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-
 이 프로젝트는 총 3주의 기간을 거쳐 구현하였습니다.
 
 ### 1주차: 기획
-  - simple-peer 라이브러리 시연
-  - [카드 제작](#카드-제작-과정)
-  - 목업: [Figma](https://www.figma.com/file/vSOrS4IR4D2XlizT8qo7bR/SET-GEMS-Mockup?node-id=0%3A1)
-  - 데이터베이스 스키마: [Lucid Chart](https://lucid.app/lucidchart/dab0b8b7-bcc2-463c-9993-3081e038c37c/view)
-  - 태스크 보드: [Github Project](https://github.com/orgs/SET-GEMS/projects/1)
+- simple-peer 라이브러리 시연
+- [카드 제작](#카드-제작-과정)
+- 목업: [Figma](https://www.figma.com/file/vSOrS4IR4D2XlizT8qo7bR/SET-GEMS-Mockup?node-id=0%3A1)
+- 데이터베이스 스키마: [Lucid Chart](https://lucid.app/lucidchart/dab0b8b7-bcc2-463c-9993-3081e038c37c/view)
+- 태스크 보드: [Github Project](https://github.com/orgs/SET-GEMS/projects/1)
 
 ### 2주차: 개발
-  - [서버] express 설정, 소켓 연결
-  - [클라이언트] 웰컴 페이지, 혼자하기 모드, 같이하기 모드
-  - 배포
-    - [클라이언트] netlify 배포
-    - [서버] Amazon Elastic Beanstalk 배포 
-  - [클라이언트] Service worker 추가
+- [서버] express 설정, 소켓 연결
+- [클라이언트] 웰컴 페이지, 혼자하기 모드, 같이하기 모드
+- 배포
+  - [클라이언트] netlify 배포
+  - [서버] Amazon Elastic Beanstalk 배포 
+- [클라이언트] Service worker 추가
 
 ### 3주차: 마무리
-  - 시범 운영 후 피드백 반영
-  - 프로젝트 소개 및 ReadMe 작성
-  - [서버, 클라이언트] 테스트 작성
+- 시범 운영 후 피드백 반영
+- 프로젝트 소개 및 ReadMe 작성
+- [서버, 클라이언트] 테스트 작성
 
 
 ## 카드 제작기
