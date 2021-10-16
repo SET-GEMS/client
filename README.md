@@ -60,11 +60,12 @@ https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-
 ![다운로드](https://user-images.githubusercontent.com/72963478/137580882-6566867d-ec7e-459e-95f9-af9ecf24931b.png)
 ![실행](https://user-images.githubusercontent.com/72963478/137580940-60485449-f174-4d27-8d05-327ed33fc24f.png)
 
-- 다운로드: 다운로드 버튼 혹은 홈 화면에 추가(ios 모바일)를 이용해 앱을 다운로드 할 수 있습니다.
+- 다운로드 버튼 혹은 홈 화면에 추가(ios 모바일)를 이용해 앱을 다운로드 할 수 있습니다.
 - 다운로드 위치
   - [안드로이드]: 앱 서랍에 앱이 추가됩니다.
   - [데스크탑]: 바탕화면에 앱이 추가됩니다.
   - [ios 모바일]: 홈 화면에 앱이 추가됩니다. 
+- 실행: 등록된 service worker가 캐시에 저장한 앱이 실행됩니다. 
 
 ### 웰컴페이지
 가이드 / 카드 조합해보기
@@ -82,14 +83,23 @@ https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-
 ![플레이](https://user-images.githubusercontent.com/72963478/137577346-85b21567-882a-49f9-a674-28cf226f3a8f.png)
 ![랭킹 등록](https://user-images.githubusercontent.com/72963478/137577724-4d674073-744a-498e-83d7-a6e39d2a66ea.png)
 
-- 랭킹: 혼자하기 모드에 진입하면 첫 화면에서 상위 20인의 기록을 확인할 수 있습니다.
-- 플레이 화면: 플레이 중에는 플레이 시간과 남은 카드 수를 확인할 수 있습니다.
-- 랭킹 등록 화면: 플레이 시간이 상위 20인 안에 든다면 원하는 닉네임으로 랭킹을 등록할 수 있습니다.
+- 랭킹
+  - 혼자하기 모드에 진입하면 첫 화면에서 상위 20인의 기록을 확인할 수 있습니다.
+  - 해당 기록은 서버에서 데이터베이스에 저장된 정보를 보내온 것입니다.
+- 플레이 화면
+  - 플레이 중에는 플레이 시간과 남은 카드 수를 확인할 수 있습니다.
+  - 서버와 완전히 분리된 상태로, 네트워크 연결이 되지 않더라도 진행할 수 있습니다. 
+- 랭킹 등록 화면
+  - 플레이 시간이 상위 20인 안에 든다면 원하는 닉네임으로 랭킹을 등록할 수 있습니다.
+  - 데이터베이스에 저장되어있는 기록이 20개라면 가장 긴 플레이시간을 가진 데이터 하나를 지우고 새 기록을 저장합니다.
 
 ### 같이하기
 방 선택
 
 ![방 선택](https://user-images.githubusercontent.com/72963478/137578991-4fdee21f-c855-48eb-9ee1-5d1877903670.png)
+
+- 방 이름과 닉네임, 화상통화 설정을 선택한 후 방에 입장할 수 있습니다.
+- 만약 입장하려는 방의 인원 수가 4명이라면 인원초과 메시지를 띄웁니다.
 
 대기 / 플레이 / 게임결과
 
@@ -97,13 +107,15 @@ https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-
 ![플레이](https://user-images.githubusercontent.com/72963478/137578450-ead13cae-1289-4ef5-b1b2-45c974c77e98.gif)
 ![결과](https://user-images.githubusercontent.com/72963478/137578849-a6ddd770-e81c-4c9b-a770-e93e665fb612.png)
 
-- 방 선택: 방 이름과 닉네임, 화상통화 설정을 선택한 후 방에 입장할 수 있습니다.
+
 - 대기
   - 화상통화와 함께 채팅을 할 수 있습니다
+  - 채팅은 Socket.IO로 화상통화는 WebRTC로 구현하였습니다. 
   - 방에 있는 모든 플레이어가 준비를 하면, 방장은 게임을 시작할 수 있습니다.
 - 플레이
   - SET 버튼을 누른 후, 5초 간 카드를 선택할 수 있습니다.
   - 만약 5초 동안 조합을 완성하지 못한다면, 5초 동안 SET 버튼이 비활성화됩니다.
+  - 게임 중간에 들어온 플레이어도 게임 진행 상황을 모두 전달받아 바로 게임에 참여할 수 있습니다.
 - 게임결과: 게임 결과를 확인하고 대기상태로 돌아갈 수 있습니다.
 
 ## 개발 과정
@@ -114,11 +126,11 @@ https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-
 - [카드 제작](#카드-제작기)
 - 목업
 
-![image](https://user-images.githubusercontent.com/72963478/137580152-dafd5e18-ad8d-40b3-9a1d-f9c90a73a961.png)
+![목업](https://user-images.githubusercontent.com/72963478/137580152-dafd5e18-ad8d-40b3-9a1d-f9c90a73a961.png)
 
 - 데이터베이스 스키마
 
-![image](https://user-images.githubusercontent.com/72963478/137580176-ec7784f5-583d-4424-9046-d18c62740b88.png)
+![스키마](https://user-images.githubusercontent.com/72963478/137580176-ec7784f5-583d-4424-9046-d18c62740b88.png)
 
 - 태스크 보드: [Github Project](https://github.com/orgs/SET-GEMS/projects/1)
 
