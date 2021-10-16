@@ -84,15 +84,15 @@
 ### 힌트시간을 길게 설정했을 시 잘못된 힌트가 보여짐
 - 태스크 카드: [#2 혼자하기 플레이 페이지](https://github.com/SET-GEMS/set-gems-client/issues/2)
 - 원인
-  - 새로운 카드가 바닥에 배치될 때마다 setTimeout으로 일정 시간 후에 힌트를 보여주도록 설정
-  - 힌트 시간이 다 지나기도 전에 새로운 카드가 배치됐을 경우, 이전에 예약되었던 힌트가 보여짐.
-- 수정사항: 이전 hintTimer를 state로 설정하여 새로운 힌트가 생기면 이전의 힌트타이머를 제거하도록 함.
+  - 새로운 카드가 바닥에 배치될 때마다 setTimeout으로 일정 시간 후에 힌트를 보여주도록 설정.
+  - 힌트 시간이 다 지나기 전에 새로운 카드가 배치됐을 경우, 이전의 setTimeout이 정리가 되지 않고 설정한 대로 실행됨.
+- 수정사항: 이전 hintTimer를 state로 설정하여 새로운 힌트가 생기면 이전의 힌트타이머를 정리하도록 함.
 
 ### 같이하기 방에 3명 이상 입장 시 기존의 peer 연결이 끊김
 - 태스크 카드: [#6 같이하기 대기 페이지](https://github.com/SET-GEMS/set-gems-client/issues/6)
 - 원인
-  - socket의 이벤트리스너를 등록하는 useEffect의 dependency에 players.length가 있었음. 
-  - 새로운 players가 추가 되면서 socket 이벤트 리스너를 정리 없이 중복해서 등록함.
+  - socket의 이벤트리스너를 등록하는 useEffect의 dependency에 players.length가 있음. 
+  - 새로운 player가 추가 되면서 socket 이벤트 리스너를 정리 없이 중복해서 등록함.
   - 한 peers를 이벤트 리스너가 중복된 만큼 생성하여 기존 peer들이 파괴됨.
 - 수정사항: useEffect의 반환값에서 socket.removeAllListeners 메소드로 socket 이벤트리스너를 정리함.
 
@@ -100,7 +100,7 @@
 - 태스크 카드: [#21 커스텀 훅 사용으로 관심사 분리](https://github.com/SET-GEMS/set-gems-client/issues/21)
 - 원인
   - socket의 이벤트리스너들을 hook으로 분리하여 각각 Player컴포넌트에서 등록하게 함.
-  - socket 이벤트의 정리는 이전과 같이 socket.removeAllListeners를 사용.
+  - socket 이벤트의 정리는 이전과 같이 socket.removeAllListeners를 사용해서 정리함.
   - 플레이어가 나가면 Player 컴포넌트가 언마운트 되면서 다른 컴포넌트에서 사용중인 socket의 이벤트리스너까지 전부 지워짐.
 - 수정사항: 중복으로 사용되는 이벤트의 경우, socket.off 메소드로 개별 이벤트리스너를 지우는 방식으로 바꿈.
 
