@@ -54,6 +54,18 @@ https://user-images.githubusercontent.com/72963478/136772296-55e99e1b-ed79-44e0-
 
 ## 미리보기
 
+### Progressive Web app
+다운로드 / 실행
+
+![다운로드](https://user-images.githubusercontent.com/72963478/137580882-6566867d-ec7e-459e-95f9-af9ecf24931b.png)
+![실행](https://user-images.githubusercontent.com/72963478/137580940-60485449-f174-4d27-8d05-327ed33fc24f.png)
+
+- 다운로드: 다운로드 버튼 혹은 홈 화면에 추가(ios 모바일)를 이용해 앱을 다운로드 할 수 있습니다.
+- 다운로드 위치
+  - [안드로이드]: 앱 서랍에 앱이 추가됩니다.
+  - [데스크탑]: 바탕화면에 앱이 추가됩니다.
+  - [ios 모바일]: 홈 화면에 앱이 추가됩니다. 
+
 ### 웰컴페이지
 가이드 / 카드 조합해보기
 
