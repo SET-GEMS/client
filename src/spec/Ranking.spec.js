@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 
 import Ranking from "../components/Ranking";
-import * as ranking from "../api/ranking";
+import * as rankingHelpers from "../api/ranking";
 
 const mockRanking = [...Array(20)].map((_, i) => ({ _id: `ranker${i}`, name: `ranker${i}`, time: 10 + i }));
 
@@ -12,7 +12,7 @@ describe("Ranking", () => {
   let spyGetRanking = null;
 
   beforeEach(async () => {
-    spyGetRanking = jest.spyOn(ranking, "getRanking").mockImplementation(() => Promise.resolve(mockRanking));
+    spyGetRanking = jest.spyOn(rankingHelpers, "getRanking").mockImplementation(() => Promise.resolve(mockRanking));
 
     await act(async () => {
       await render(<Ranking setRankerStandard={mockSetRankerStandard} />);
@@ -32,7 +32,7 @@ describe("Ranking", () => {
   });
 
   it("should call getRanking", () => {
-    const spyGetRanking = jest.spyOn(ranking, "getRanking");
+    const spyGetRanking = jest.spyOn(rankingHelpers, "getRanking");
     expect(spyGetRanking).toBeCalledTimes(1);
   });
 

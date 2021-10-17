@@ -15,6 +15,7 @@
     "socket.io-client": "^4.2.0"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^7.0.2",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.0",
     "lint-staged": "^11.1.2",

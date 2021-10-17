@@ -8,10 +8,16 @@ function on(event, func) {
   if (EVENTS[event]) {
     return EVENTS[event].push(func);
   }
-  EVENTS[event] = func;
+  EVENTS[event] = [func];
 }
 
-const socket = { on, emit };
+function off(event) {
+  if (EVENTS[event]) {
+    delete EVENTS[event];
+  }
+}
+
+const socket = { on, emit, off, removeAllListeners(event) { off(event); } };
 
 const io = {
   connect() { return socket; },
