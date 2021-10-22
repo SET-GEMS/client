@@ -8,12 +8,10 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
   const hintTime = 30000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
-  const [hasNewCards, setHasNewCards] = useState(false);
   const [isRequiredShuffle, setIsRequiredShuffle] = useState(false);
   const [remainingCards, setRemainingCards] = useState([]);
   const [openedCards, setOpenedCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
-  const [hintTimer, setHintTimer] = useState(null);
 
   useEffect(() => {
     const initialCards = shuffleCards(getAllCardInfo());
@@ -21,16 +19,9 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
 
     setRemainingCards(initialCards);
     setOpenedCards(openedCards);
-    setHasNewCards(true);
   }, []);
 
   useEffect(() => {
-    if (!hasNewCards) {
-      return;
-    }
-
-    setHasNewCards(false);
-
     const correctSet = findValidSet(openedCards);
 
     if (!correctSet.length) {
@@ -40,16 +31,14 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
     const cardElements = cardAreaRef.current.children;
     const setElements = correctSet.map((cardIndex) => cardElements[cardIndex]);
 
-    const newHintTimer = setTimeout(() => {
+    const hintTimer = setTimeout(() => {
       setElements.forEach((card) => {
         card.classList.add("hint");
       });
     }, hintTime);
 
-    setHintTimer(newHintTimer);
-
     return () => clearTimeout(hintTimer);
-  }, [hasNewCards]);
+  }, [openedCards]);
 
   useEffect(() => {
     if (!isRequiredShuffle) {
@@ -71,7 +60,6 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
 
     setRemainingCards(newRemainingCards);
     setOpenedCards(newOpenedCards);
-    setHasNewCards(true);
   }, [isRequiredShuffle]);
 
   useEffect(() => {
@@ -122,7 +110,6 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
     onSuccess(cardCount);
     setOpenedCards(newOpenedCards);
     setRemainingCards(newRemainingCards);
-    setHasNewCards(true);
   }, [selectedCards.length]);
 
   const handleCardClick = (i, { currentTarget }) => {
