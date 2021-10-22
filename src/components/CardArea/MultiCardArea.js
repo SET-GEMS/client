@@ -15,12 +15,10 @@ function MultiCardArea({
   const hintTime = 30000;
   const maxCardCount = 12;
   const cardAreaRef = useRef();
-  const [hasNewCards, setHasNewCards] = useState(false);
   const [isRequiredShuffle, setIsRequiredShuffle] = useState(false);
   const [remainingCards, setRemainingCards] = useState([]);
   const [openedCards, setOpenedCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
-  const [hintTimer, setHintTimer] = useState(null);
 
   useEffect(() => {
     if (!isLeader) {
@@ -32,7 +30,6 @@ function MultiCardArea({
 
     setRemainingCards(initialCards);
     setOpenedCards(openedCards);
-    setHasNewCards(true);
 
     socket.emit(SET_CARDS, roomName, openedCards, initialCards);
   }, []);
@@ -55,7 +52,6 @@ function MultiCardArea({
     socket.on(SET_CARDS, (openedCards, remainingCards) => {
       setRemainingCards(remainingCards);
       setOpenedCards(openedCards);
-      setHasNewCards(true);
     });
 
     socket.on(SELECT_CARD, handleCardSelect);
@@ -76,15 +72,9 @@ function MultiCardArea({
     socket.on(NEW_PLAYER, handleNewPlayer);
 
     return () => socket.off(NEW_PLAYER, handleNewPlayer);
-  }, [hasNewCards, isLeader]);
+  }, [openedCards, remainingCards, isLeader]);
 
   useEffect(() => {
-    if (!hasNewCards) {
-      return;
-    }
-
-    setHasNewCards(false);
-
     const correctSet = findValidSet(openedCards);
 
     if (!correctSet.length && isLeader) {
@@ -94,16 +84,16 @@ function MultiCardArea({
     const cardElements = cardAreaRef.current.children;
     const setElements = correctSet.map((cardIndex) => cardElements[cardIndex]);
 
-    const newHintTimer = setTimeout(() => {
+    const hintTimer = setTimeout(() => {
       setElements.forEach((card) => {
         card.classList.add("hint");
       });
     }, hintTime);
 
-    setHintTimer(newHintTimer);
-
-    return () => clearTimeout(hintTimer);
-  }, [hasNewCards]);
+    return () => {
+      clearTimeout(hintTimer);
+    };
+  }, [openedCards, remainingCards]);
 
   useEffect(() => {
     if (!isRequiredShuffle) {
@@ -125,7 +115,6 @@ function MultiCardArea({
 
     setRemainingCards(newRemainingCards);
     setOpenedCards(newOpenedCards);
-    setHasNewCards(true);
 
     socket.emit(SET_CARDS, roomName, newOpenedCards, newRemainingCards);
   }, [isRequiredShuffle]);
@@ -178,7 +167,6 @@ function MultiCardArea({
     onSuccess(cardCount);
     setOpenedCards(newOpenedCards);
     setRemainingCards(newRemainingCards);
-    setHasNewCards(true);
   }, [selectedCards.length]);
 
   const handleCardClick = (i) => {
