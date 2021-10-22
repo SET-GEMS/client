@@ -1,6 +1,6 @@
 const serverUrl = process.env.REACT_APP_SERVER_URL + "/ranking";
 
-const useMock = false;
+const useMock = process.env.NODE_ENV === "test" || false;
 
 async function getRanking() {
   if (!useMock) {
