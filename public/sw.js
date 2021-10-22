@@ -28,7 +28,7 @@ self.addEventListener("install", (ev) => {
 });
 
 self.addEventListener("activate", (ev) => {
-  ex.waitUntil(clearCache());
+  ev.waitUntil(clearCache());
 });
 
 self.addEventListener("fetch", (ev) => {

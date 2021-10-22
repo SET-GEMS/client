@@ -52,12 +52,6 @@ function MultiCardArea({
       setSelectedCards((prev) => [ ...prev, i]);
     };
 
-    const handleNewPlayer = (player) => {
-      if (isLeader) {
-        socket.emit(LET_JOIN, player.id, openedCards, remainingCards);
-      }
-    };
-
     socket.on(SET_CARDS, (openedCards, remainingCards) => {
       setRemainingCards(remainingCards);
       setOpenedCards(openedCards);
@@ -65,14 +59,24 @@ function MultiCardArea({
     });
 
     socket.on(SELECT_CARD, handleCardSelect);
-    socket.on(NEW_PLAYER, handleNewPlayer);
 
     return () => {
       socket.removeAllListeners(SET_CARDS);
       socket.removeAllListeners(SELECT_CARD);
-      socket.off(NEW_PLAYER, handleNewPlayer);
     };
   }, [socket.id, isLeader, cardAreaRef.current]);
+
+  useEffect(() => {
+    const handleNewPlayer = (player) => {
+      if (isLeader) {
+        socket.emit(LET_JOIN, player.id, openedCards, remainingCards);
+      }
+    };
+
+    socket.on(NEW_PLAYER, handleNewPlayer);
+
+    return () => socket.off(NEW_PLAYER, handleNewPlayer);
+  }, [hasNewCards, isLeader]);
 
   useEffect(() => {
     if (!hasNewCards) {
@@ -175,7 +179,6 @@ function MultiCardArea({
     setOpenedCards(newOpenedCards);
     setRemainingCards(newRemainingCards);
     setHasNewCards(true);
-
   }, [selectedCards.length]);
 
   const handleCardClick = (i) => {
