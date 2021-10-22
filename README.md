@@ -86,7 +86,7 @@
 - 원인
   - 새로운 카드가 바닥에 배치될 때마다 setTimeout으로 일정 시간 후에 힌트를 보여주도록 설정.
   - 힌트 시간이 다 지나기 전에 새로운 카드가 배치됐을 경우, 이전의 setTimeout이 정리가 되지 않고 설정한 대로 실행됨.
-- 수정사항: 이전 hintTimer를 state로 설정하여 새로운 힌트가 생기면 이전의 힌트타이머를 정리하도록 함.
+- 수정사항: useEffect의 반환값에서 clearTimeout으로 hintTimer를 정리함.
 
 ### 같이하기 방에 3명 이상 입장 시 기존의 peer 연결이 끊김
 - 태스크 카드: [#6 같이하기 대기 페이지](https://github.com/SET-GEMS/set-gems-client/issues/6)
