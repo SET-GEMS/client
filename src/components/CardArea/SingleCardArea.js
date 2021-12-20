@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
 import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../../helper/card";
@@ -112,7 +112,7 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
     setRemainingCards(newRemainingCards);
   }, [selectedCards.length]);
 
-  const handleCardClick = (i, { currentTarget }) => {
+  const handleCardClick = useCallback((i, currentTarget) => {
     currentTarget.classList.toggle("selected");
 
     if (selectedCards.includes(i)) {
@@ -121,10 +121,17 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
     }
 
     setSelectedCards((cards) => [ ...cards, i]);
-  };
+  }, []);
 
   const cardElements = openedCards.map((cardProps, i) => {
-    return <Card key={`card${i}`} {...cardProps} onClick={handleCardClick.bind(null, i)}/>;
+    return (
+      <Card
+        key={JSON.stringify(cardProps)}
+        index={i}
+        {...cardProps}
+        onClick={handleCardClick}
+      />
+    );
   });
 
   return (
@@ -139,4 +146,4 @@ SingleCardArea.propTypes = {
   onGameCompleted: PropTypes.func,
 };
 
-export default SingleCardArea;
+export default React.memo(SingleCardArea);

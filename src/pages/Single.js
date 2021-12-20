@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 
 import Ranking from "../components/Ranking";
+import StatusWindow from "../components/StatusWindow";
 import { SingleCardArea } from "../components/CardArea";
 import { SingleResult } from "../components/Result";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
@@ -35,8 +36,8 @@ function Single({ onHomeButtonClick }) {
     }
   };
 
-  const handleSuccess = (count) => setRestCardCount(count);
-  const handleGameCompleted = () => setState(ENDED);
+  const handleSuccess = useCallback((count) => setRestCardCount(count), []);
+  const handleGameCompleted = useCallback(() => setState(ENDED), []);
   const handleRankingFormSubmit = () => setState(WAITING);
 
   return (
@@ -63,10 +64,7 @@ function Single({ onHomeButtonClick }) {
         </div>
         <div className="sub">
           {state === PLAYING
-            && <div>
-              <p>{`${time}초`}</p>
-              <p>{`남은 카드 수: ${restCardCount}개`}</p>
-            </div>}
+            && <StatusWindow restCardCount={restCardCount} time={time} />}
         </div>
         <div className="button">
           <button type="button" onClick={handleStartButtonClick}>
