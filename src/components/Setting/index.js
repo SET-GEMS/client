@@ -107,4 +107,4 @@ Setting.propTypes = {
   onStreamChange: PropTypes.func,
 };
 
-export default Setting;
+export default React.memo(Setting);

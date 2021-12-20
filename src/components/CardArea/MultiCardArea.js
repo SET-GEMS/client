@@ -1,9 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
 import Card from "../Card";
-import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../../helper/card";
-import { NEW_PLAYER, SELECT_CARD, SET_CARDS, LET_JOIN } from "../../constants/socketEvents";
+import {
+  getAllCardInfo,
+  shuffleCards,
+  validateSet,
+  findValidSet,
+} from "../../helper/card";
+import {
+  NEW_PLAYER,
+  SELECT_CARD,
+  SET_CARDS,
+  LET_JOIN,
+} from "../../constants/socketEvents";
 
 function MultiCardArea({
   onSuccess,
@@ -46,7 +56,7 @@ function MultiCardArea({
         return;
       }
 
-      setSelectedCards((prev) => [ ...prev, i]);
+      setSelectedCards((prev) => [...prev, i]);
     };
 
     socket.on(SET_CARDS, (openedCards, remainingCards) => {
@@ -106,12 +116,12 @@ function MultiCardArea({
       return onGameCompleted();
     }
 
-    const newRemainingCards = shuffleCards(
-      [...remainingCards, ...openedCards],
-    );
+    const newRemainingCards = shuffleCards([...remainingCards, ...openedCards]);
 
-    const newOpenedCards = newRemainingCards
-      .splice(-maxCardCount, maxCardCount);
+    const newOpenedCards = newRemainingCards.splice(
+      -maxCardCount,
+      maxCardCount,
+    );
 
     setRemainingCards(newRemainingCards);
     setOpenedCards(newOpenedCards);
@@ -133,11 +143,12 @@ function MultiCardArea({
       card.classList.remove("hint");
     });
 
-    const selectedSet = selectedCards
-      .map((cardIndex) => openedCards[cardIndex]);
+    const selectedSet = selectedCards.map(
+      (cardIndex) => openedCards[cardIndex],
+    );
 
     if (!validateSet(selectedSet)) {
-      selectedCards.forEach(cardIndex => {
+      selectedCards.forEach((cardIndex) => {
         const animationTime = 300;
 
         cardElements[cardIndex].classList.add("wrong");
@@ -169,12 +180,19 @@ function MultiCardArea({
     setRemainingCards(newRemainingCards);
   }, [selectedCards.length]);
 
-  const handleCardClick = (i) => {
+  const handleCardClick = useCallback((i) => {
     socket.emit(SELECT_CARD, roomName, i);
-  };
+  }, [socket.id, roomName]);
 
   const cardElements = openedCards.map((cardProps, i) => {
-    return <Card key={`card${i}`} {...cardProps} onClick={handleCardClick.bind(null, i)}/>;
+    return (
+      <Card
+        key={JSON.stringify(cardProps)}
+        index={i}
+        {...cardProps}
+        onClick={handleCardClick}
+      />
+    );
   });
 
   return (
@@ -187,7 +205,13 @@ function MultiCardArea({
 MultiCardArea.propTypes = {
   onSuccess: PropTypes.func,
   onGameCompleted: PropTypes.func,
-  socket: PropTypes.object,
+  socket: PropTypes.shape({
+    id: PropTypes.string,
+    emit: PropTypes.func,
+    on: PropTypes.func,
+    removeAllListeners: PropTypes.func,
+    off: PropTypes.func,
+  }),
   roomName: PropTypes.string,
   isLeader: PropTypes.bool,
 };

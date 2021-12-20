@@ -19,4 +19,4 @@ MyVideo.propTypes = {
   stream: PropTypes.object,
 };
 
-export default MyVideo;
+export default React.memo(MyVideo);

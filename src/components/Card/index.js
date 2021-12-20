@@ -3,13 +3,14 @@ import PropTypes from "prop-types";
 
 import "./Card.css";
 import { getBackgroundImageUri, getGemImageUri } from "../../helper/image";
-import { GEM_COLOR, GEM_SHAPE, METAL_COLOR, METAL_SHAPE } from "../../constants/cardProperty";
+import {
+  GEM_COLOR,
+  GEM_SHAPE,
+  METAL_COLOR,
+  METAL_SHAPE,
+} from "../../constants/cardProperty";
 
-function Card({
-  gemColor, gemShape,
-  metalColor, metalShape,
-  onClick,
-}) {
+function Card({ index, gemColor, gemShape, metalColor, metalShape, onClick }) {
   const animationTime = 500;
   const [isNew, setIsNew] = useState(false);
   const backgroundImageUri = getBackgroundImageUri(metalColor, metalShape);
@@ -17,26 +18,37 @@ function Card({
 
   useEffect(() => {
     setIsNew(true);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsNew(false);
     }, animationTime);
+
+    return () => clearTimeout(timer);
   }, [gemColor, gemShape, metalColor, metalShape]);
+
+  const handleClick = ({ currentTarget }) => {
+    if (onClick) {
+      onClick(index, currentTarget);
+    }
+  };
 
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
       className={isNew ? "new card" : "card"}
       style={{ backgroundImage: `url(${backgroundImageUri})` }}
-    ><img src={gemImageUri} /></div>
+    >
+      <img src={gemImageUri} />
+    </div>
   );
 }
 
 Card.propTypes = {
-  gemColor: PropTypes.oneOf(Object.values(GEM_COLOR)),
-  gemShape: PropTypes.oneOf(Object.values(GEM_SHAPE)),
-  metalColor: PropTypes.oneOf(Object.values(METAL_COLOR)),
-  metalShape: PropTypes.oneOf(Object.values(METAL_SHAPE)),
+  index: PropTypes.number,
+  gemColor: PropTypes.oneOf(Object.values(GEM_COLOR)).isRequired,
+  gemShape: PropTypes.oneOf(Object.values(GEM_SHAPE)).isRequired,
+  metalColor: PropTypes.oneOf(Object.values(METAL_COLOR)).isRequired,
+  metalShape: PropTypes.oneOf(Object.values(METAL_SHAPE)).isRequired,
   onClick: PropTypes.func,
 };
 
-export default Card;
+export default React.memo(Card);
