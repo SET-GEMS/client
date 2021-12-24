@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import { getAllCardInfo, shuffleCards, validateSet, findValidSet } from "../../helper/card";
@@ -7,11 +7,12 @@ import Card from "../Card";
 function SingleCardArea({ onSuccess, onGameCompleted }) {
   const hintTime = 30000;
   const maxCardCount = 12;
-  const cardAreaRef = useRef();
   const [isRequiredShuffle, setIsRequiredShuffle] = useState(false);
   const [remainingCards, setRemainingCards] = useState([]);
   const [openedCards, setOpenedCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
+  const [hintCard, setHintCard] = useState([]);
+  const [isWrong, setIsWrong] = useState(false);
 
   useEffect(() => {
     const initialCards = shuffleCards(getAllCardInfo());
@@ -28,13 +29,8 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
       return setIsRequiredShuffle(true);
     }
 
-    const cardElements = cardAreaRef.current.children;
-    const setElements = correctSet.map((cardIndex) => cardElements[cardIndex]);
-
     const hintTimer = setTimeout(() => {
-      setElements.forEach((card) => {
-        card.classList.add("hint");
-      });
+      setHintCard(correctSet);
     }, hintTime);
 
     return () => clearTimeout(hintTimer);
@@ -67,28 +63,16 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
       return;
     }
 
-    setSelectedCards([]);
-
-    const cardElements = cardAreaRef.current.children;
-
-    [...cardElements].forEach((card) => {
-      card.classList.remove("selected");
-      card.classList.remove("hint");
-    });
-
     const selectedSet = selectedCards
       .map((cardIndex) => openedCards[cardIndex]);
 
     if (!validateSet(selectedSet)) {
-      selectedCards.forEach(cardIndex => {
-        const animationTime = 300;
+      const animationTime = 300;
+      setIsWrong(true);
 
-        cardElements[cardIndex].classList.add("wrong");
-
-        setTimeout(() => {
-          cardElements[cardIndex].classList.remove("wrong");
-        }, [animationTime]);
-      });
+      setTimeout(() => {
+        setIsWrong(false);
+      }, [animationTime]);
 
       return;
     }
@@ -112,9 +96,16 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
     setRemainingCards(newRemainingCards);
   }, [selectedCards.length]);
 
-  const handleCardClick = useCallback((i, currentTarget) => {
-    currentTarget.classList.toggle("selected");
+  useEffect(() => {
+    if (isWrong) {
+      return;
+    }
 
+    setSelectedCards([]);
+    setHintCard([]);
+  }, [isWrong, openedCards]);
+
+  const handleCardClick = useCallback((i) => {
     if (selectedCards.includes(i)) {
       setSelectedCards((cards) => cards.filter((cardIndex) => cardIndex !== i));
       return;
@@ -124,9 +115,20 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
   }, []);
 
   const cardElements = openedCards.map((cardProps, i) => {
+    let state = "";
+
+    if (hintCard.includes(i)) {
+      state = "hint";
+    }
+
+    if (selectedCards.includes(i)) {
+      state = isWrong ? "wrong" : "selected";
+    }
+
     return (
       <Card
         key={JSON.stringify(cardProps)}
+        state={state}
         index={i}
         {...cardProps}
         onClick={handleCardClick}
@@ -135,7 +137,7 @@ function SingleCardArea({ onSuccess, onGameCompleted }) {
   });
 
   return (
-    <div className="card-area" ref={cardAreaRef}>
+    <div className="card-area">
       {cardElements}
     </div>
   );

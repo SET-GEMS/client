@@ -12,6 +12,7 @@ import {
 
 function Card({
   index,
+  state,
   gemColor,
   gemShape,
   metalColor,
@@ -70,7 +71,7 @@ function Card({
   return (
     <div
       onClick={handleClick}
-      className={isNew ? "new card" : "card"}
+      className={isNew ? "new card" : `${state} card`}
     >
       <canvas ref={canvasRef}></canvas>
     </div>
@@ -79,6 +80,7 @@ function Card({
 
 Card.propTypes = {
   index: PropTypes.number,
+  state: PropTypes.string,
   gemColor: PropTypes.oneOf(Object.values(GEM_COLOR)).isRequired,
   gemShape: PropTypes.oneOf(Object.values(GEM_SHAPE)).isRequired,
   metalColor: PropTypes.oneOf(Object.values(METAL_COLOR)).isRequired,

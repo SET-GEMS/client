@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import Card from "../Card";
@@ -24,11 +24,12 @@ function MultiCardArea({
 }) {
   const hintTime = 30000;
   const maxCardCount = 12;
-  const cardAreaRef = useRef();
   const [isRequiredShuffle, setIsRequiredShuffle] = useState(false);
   const [remainingCards, setRemainingCards] = useState([]);
   const [openedCards, setOpenedCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
+  const [hintCard, setHintCard] = useState([]);
+  const [isWrong, setIsWrong] = useState(false);
 
   useEffect(() => {
     if (!isLeader) {
@@ -46,11 +47,6 @@ function MultiCardArea({
 
   useEffect(() => {
     const handleCardSelect = (i) => {
-      const cardElements = cardAreaRef.current.children;
-      const selectedCard = cardElements[i];
-
-      selectedCard.classList.toggle("selected");
-
       if (selectedCards.includes(i)) {
         setSelectedCards((prev) => prev.filter((cardIndex) => cardIndex !== i));
         return;
@@ -70,7 +66,7 @@ function MultiCardArea({
       socket.removeAllListeners(SET_CARDS);
       socket.removeAllListeners(SELECT_CARD);
     };
-  }, [socket.id, isLeader, cardAreaRef.current]);
+  }, [socket.id, isLeader]);
 
   useEffect(() => {
     const handleNewPlayer = (player) => {
@@ -91,19 +87,12 @@ function MultiCardArea({
       return setIsRequiredShuffle(true);
     }
 
-    const cardElements = cardAreaRef.current.children;
-    const setElements = correctSet.map((cardIndex) => cardElements[cardIndex]);
-
     const hintTimer = setTimeout(() => {
-      setElements.forEach((card) => {
-        card.classList.add("hint");
-      });
+      setHintCard(correctSet);
     }, hintTime);
 
-    return () => {
-      clearTimeout(hintTimer);
-    };
-  }, [openedCards, remainingCards]);
+    return () => clearTimeout(hintTimer);
+  }, [openedCards]);
 
   useEffect(() => {
     if (!isRequiredShuffle) {
@@ -134,29 +123,18 @@ function MultiCardArea({
       return;
     }
 
-    setSelectedCards([]);
-
-    const cardElements = cardAreaRef.current.children;
-
-    [...cardElements].forEach((card) => {
-      card.classList.remove("selected");
-      card.classList.remove("hint");
-    });
-
     const selectedSet = selectedCards.map(
       (cardIndex) => openedCards[cardIndex],
     );
 
     if (!validateSet(selectedSet)) {
-      selectedCards.forEach((cardIndex) => {
-        const animationTime = 300;
+      const animationTime = 300;
 
-        cardElements[cardIndex].classList.add("wrong");
+      setIsWrong(true);
 
-        setTimeout(() => {
-          cardElements[cardIndex].classList.remove("wrong");
-        }, [animationTime]);
-      });
+      setTimeout(() => {
+        setIsWrong(false);
+      }, [animationTime]);
 
       return;
     }
@@ -180,14 +158,34 @@ function MultiCardArea({
     setRemainingCards(newRemainingCards);
   }, [selectedCards.length]);
 
+  useEffect(() => {
+    if (isWrong) {
+      return;
+    }
+
+    setSelectedCards([]);
+    setHintCard([]);
+  }, [isWrong, openedCards]);
+
   const handleCardClick = useCallback((i) => {
     socket.emit(SELECT_CARD, roomName, i);
   }, [socket.id, roomName]);
 
   const cardElements = openedCards.map((cardProps, i) => {
+    let state = "";
+
+    if (hintCard.includes(i)) {
+      state = "hint";
+    }
+
+    if (selectedCards.includes(i)) {
+      state = isWrong ? "wrong" : "selected";
+    }
+
     return (
       <Card
         key={JSON.stringify(cardProps)}
+        state={state}
         index={i}
         {...cardProps}
         onClick={handleCardClick}
@@ -196,7 +194,7 @@ function MultiCardArea({
   });
 
   return (
-    <div className="card-area" ref={cardAreaRef}>
+    <div className="card-area">
       {cardElements}
     </div>
   );
