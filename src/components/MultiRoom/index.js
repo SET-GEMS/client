@@ -5,7 +5,7 @@ import Player from "../Player";
 import MyVideo from "../MyVideo";
 import Setting from "../Setting";
 import Chat from "../Chat";
-import { MultiCardArea } from "../CardArea";
+import CardArea from "../CardArea";
 import { MultiResult } from "../Result";
 import useRoomStatus from "../../hooks/useRoomStatus";
 import usePlayer from "../../hooks/usePlayer";
@@ -139,7 +139,7 @@ function MultiRoom({ roomName, nickname, stream, streamSetting, socket }) {
             && <Chat roomName={roomName} socket={socket} />}
           {state === PLAYING && !isSelector && <div className="protector" />}
           {state === PLAYING
-            && <MultiCardArea
+            && <CardArea
               onSuccess={handleSuccess}
               onGameCompleted={handleGameCompleted}
               roomName={roomName}

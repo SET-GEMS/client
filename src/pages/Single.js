@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import Ranking from "../components/Ranking";
 import StatusWindow from "../components/StatusWindow";
-import { SingleCardArea } from "../components/CardArea";
+import CardArea from "../components/CardArea";
 import { SingleResult } from "../components/Result";
 import { WAITING, PLAYING, ENDED } from "../constants/playState";
 
@@ -53,7 +53,7 @@ function Single({ onHomeButtonClick }) {
           {state === WAITING
             && <Ranking setRankerStandard={setRankerStandard} />}
           {state === PLAYING
-            && <SingleCardArea
+            && <CardArea
             onSuccess={handleSuccess}
             onGameCompleted={handleGameCompleted} />}
           {state === ENDED
