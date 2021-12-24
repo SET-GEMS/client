@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 import "./Tutorial.css";
 import Card from "../Card";
@@ -76,28 +76,29 @@ function Tutorial() {
     setPropertyCheck(propertyCheck);
   }, [selectedCards.length]);
 
-  const handleCardClick = function(clickedCardIndex) {
-    if (selectedCards.includes(clickedCardIndex)) {
-      cardAreaRef.current.children[clickedCardIndex].classList.remove("selected");
+  const handleCardClick = useCallback((clickedCardIndex) => {
+    setSelectedCards((prev) => {
+      if (prev.includes(clickedCardIndex)) {
+        return prev.filter((cardIndex) => cardIndex !== clickedCardIndex);
+      }
 
-      setSelectedCards((prev) =>
-        prev.filter((cardIndex) => cardIndex !== clickedCardIndex),
-      );
-    } else if (selectedCards.length === 3) {
-      selectedCards.forEach((cardIndex) => {
-        cardAreaRef.current.children[cardIndex].classList.remove("selected");
-      });
+      if (prev.length === 3) {
+        return [clickedCardIndex];
+      }
 
-      cardAreaRef.current.children[clickedCardIndex].classList.add("selected");
-      setSelectedCards([clickedCardIndex]);
-    } else {
-      cardAreaRef.current.children[clickedCardIndex].classList.add("selected");
-      setSelectedCards((prev) => [...prev, clickedCardIndex]);
-    }
-  };
+      return [...prev, clickedCardIndex];
+    });
+  }, [cardAreaRef.current]);
 
   const cardElements = cards.map((cardProps, i) => (
-    <Card key={`card${i}`} {...cardProps} onClick={handleCardClick.bind(null, i)}/>
+    <div key={JSON.stringify(cardProps)}>
+      <Card
+        index={i}
+        state={selectedCards.includes(i) ? "selected" : ""}
+        {...cardProps}
+        onClick={handleCardClick}
+      />
+    </div>
   ));
 
   const cardTds = selectedCards.map((cardIndex) => {
