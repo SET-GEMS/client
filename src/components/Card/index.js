@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 
 import "./Card.css";
@@ -10,14 +10,50 @@ import {
   METAL_SHAPE,
 } from "../../constants/cardProperty";
 
-function Card({ index, gemColor, gemShape, metalColor, metalShape, onClick }) {
+function Card({
+  index,
+  gemColor,
+  gemShape,
+  metalColor,
+  metalShape,
+  onClick,
+}) {
   const animationTime = 500;
   const [isNew, setIsNew] = useState(false);
+  const canvasRef = useRef(null);
   const backgroundImageUri = getBackgroundImageUri(metalColor, metalShape);
   const gemImageUri = getGemImageUri(gemColor, gemShape);
 
   useEffect(() => {
     setIsNew(true);
+
+    const canvas = canvasRef.current;
+
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const context = canvas?.getContext("2d");
+
+    (async function drawImages() {
+      const backgroundImage = new Image();
+      backgroundImage.src = backgroundImageUri;
+      await backgroundImage.decode();
+
+      const gemImage = new Image();
+      gemImage.src = gemImageUri;
+      await gemImage.decode();
+
+      const gemX = canvas.width / 4;
+      const gemY = canvas.height / 4;
+      const gemWidth = canvas.width / 2;
+      const gemHeight = canvas.height / 2;
+
+      context?.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+      context?.drawImage(gemImage, gemX, gemY, gemWidth, gemHeight);
+    }) ();
+
     const timer = setTimeout(() => {
       setIsNew(false);
     }, animationTime);
@@ -35,9 +71,8 @@ function Card({ index, gemColor, gemShape, metalColor, metalShape, onClick }) {
     <div
       onClick={handleClick}
       className={isNew ? "new card" : "card"}
-      style={{ backgroundImage: `url(${backgroundImageUri})` }}
     >
-      <img src={gemImageUri} />
+      <canvas ref={canvasRef}></canvas>
     </div>
   );
 }
