@@ -43,6 +43,8 @@
 
 @media screen and (max-width: 768px) {
   .tutorial {
+    --tutorial-card-width: var(--card-width);
+    --tutorial-card-height: var(--card-height);
     display: block;
   }
 
