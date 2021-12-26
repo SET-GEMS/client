@@ -29,9 +29,9 @@ function Guide() {
     };
 
     return (
-      <div className="example-card" key={`${selectedProperty}${i}`} >
+      <div className="example-card" key={JSON.stringify(cardProps)} >
         <p>{CARD_PROPERTY_KOR[cardProps[selectedProperty]]}</p>
-        <Card {...cardProps} />
+        <Card state="" {...cardProps} />
       </div>
     );
   });

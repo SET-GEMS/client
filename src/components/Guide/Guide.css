@@ -51,9 +51,9 @@
 }
 
 .example .card {
-  box-sizing: border-box;
-  animation: none;
+  box-sizing: content-box;
   margin: 10px 2px 0 2px;
+  cursor: auto;
 }
 
 .example .card.new {
@@ -69,6 +69,7 @@
   border: 1px solid var(--main-color);
   padding: 0 5px;
   margin: 2px;
+  cursor: pointer;
 }
 
 .properties span.selected {
