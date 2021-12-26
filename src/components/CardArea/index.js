@@ -232,4 +232,4 @@ MultiCardArea.propTypes = {
   isLeader: PropTypes.bool,
 };
 
-export default MultiCardArea;
+export default React.memo(MultiCardArea);

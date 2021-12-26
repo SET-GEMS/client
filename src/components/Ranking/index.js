@@ -9,9 +9,11 @@ function Ranking({ setRankerStandard }) {
   const [ranking, setRanking] = useState([]);
 
   useEffect(() => {
-    async function loadRanking() {
+    const abortController = new AbortController();
+
+    async function loadRanking(controller) {
       try {
-        const ranking = await getRanking();
+        const ranking = await getRanking(controller);
 
         if (ranking.length === 20) {
           const lastRanker = ranking[ranking.length - 1];
@@ -25,7 +27,9 @@ function Ranking({ setRankerStandard }) {
       }
     }
 
-    loadRanking();
+    loadRanking(abortController);
+
+    return () => abortController.abort();
   }, []);
 
   const rankingElements = ranking.length

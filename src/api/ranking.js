@@ -1,10 +1,10 @@
 const serverUrl = process.env.REACT_APP_SERVER_URL + "/ranking";
-
 const useMock = process.env.NODE_ENV === "test" || false;
 
-async function getRanking() {
+async function getRanking(controller) {
   if (!useMock) {
     const res = await fetch(serverUrl, {
+      signal: controller.signal,
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -31,6 +31,7 @@ async function getRanking() {
     },
   });
   const data = await res.json();
+
   return data;
 }
 
