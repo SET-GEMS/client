@@ -16,7 +16,7 @@ import {
   LET_JOIN,
 } from "../../constants/socketEvents";
 
-function MultiCardArea({
+function CardArea({
   onSuccess,
   onGameCompleted,
   socket,
@@ -218,7 +218,7 @@ function MultiCardArea({
   );
 }
 
-MultiCardArea.propTypes = {
+CardArea.propTypes = {
   onSuccess: PropTypes.func.isRequired,
   onGameCompleted: PropTypes.func.isRequired,
   socket: PropTypes.shape({
@@ -232,4 +232,4 @@ MultiCardArea.propTypes = {
   isLeader: PropTypes.bool,
 };
 
-export default React.memo(MultiCardArea);
+export default React.memo(CardArea);
