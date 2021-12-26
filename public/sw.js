@@ -1,4 +1,4 @@
-const cacheName = "set-gems-v2";
+const cacheName = "set-gems-v3";
 const contentToCache = [
   "/index.html",
   "/favicon.ico",
